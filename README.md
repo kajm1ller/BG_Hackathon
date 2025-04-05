@@ -1,10 +1,11 @@
-# Team Name
+# BGSU HACKATHON ENTRY
+## Team Name
 **The Moon Laborers**
-# Track
+
+## Track
 **Sustainability**
 
-# Team Members
-
+## Team Members
 **Kaj Miller**
 **Remoro Oubda**
 
