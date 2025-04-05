@@ -15,6 +15,8 @@
     <div id="product-info">
         <p><strong>Name:</strong> <span id="product-name"></span></p>
         <p><strong>Energy Efficiency:</strong> <span id="energy-efficiency"></span></p>
+        <img src="" id="pic" width="200px" height="400px" />
+
     </div>
 
     <script>
@@ -34,6 +36,7 @@
                     const data = await response.json();
                     document.getElementById("product-name").textContent = data.name;
                     document.getElementById("energy-efficiency").textContent = data.energyEfficiency;
+                    document.getElementById("pic").src = data.pic;
                 } else {
                     alert('Error: Could not retrieve product info.');
                 }

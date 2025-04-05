@@ -20,9 +20,10 @@ app.post('/get-product-info', express.json(), async (req, res) => {
             if (data.products && data.products.length > 0) {
                 const product = data.products[0];
                 const name = product.title || 'Product Name Not Found';
-                const energyEfficiency = product.energy_efficiency_class || 'Not Found';
+                const energyEfficiency = product.description || 'Not Found';
+                const pic = product.images[0];
 
-                res.json({ name: name, energyEfficiency: energyEfficiency });
+                res.json({ name: name, energyEfficiency: energyEfficiency, pic: pic });
             } else {
                 res.status(404).json({ error: 'No product data found' });
             }
