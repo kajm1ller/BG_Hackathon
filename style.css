@@ -1,5 +1,298 @@
+/* General Body Styles */
 body {
-    background-color: orangered;
-
-
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #a0d2eb;
+    /* A specific light blue shade */
+    color: #333;
+    /* Default text color */
+    height: 100vh;
+    /* Ensure body takes full viewport height */
+    overflow: hidden;
+    /* Prevent scrollbars if content fits */
 }
+
+/* Helper to hide elements */
+.hidden {
+    display: none !important;
+}
+
+/* Authentication Container Styling */
+#authContainer {
+    margin: 3em auto;
+    /* More vertical margin */
+    padding: 2em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 350px;
+    text-align: center;
+}
+
+#authContainer h1 {
+    margin-bottom: 1.5em;
+    color: #0056b3;
+}
+
+#authContainer h2 {
+    margin-top: 0;
+    margin-bottom: 1em;
+    color: #333;
+}
+
+#authContainer label {
+    display: block;
+    margin-bottom: 0.3em;
+    font-weight: bold;
+    text-align: left;
+    /* Align labels left */
+}
+
+#authContainer input[type="text"],
+#authContainer input[type="password"] {
+    margin-bottom: 1em;
+    padding: 0.8em;
+    width: 100%;
+    /* Take full width */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#authContainer button {
+    padding: 0.8em 1.5em;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-top: 0.5em;
+    width: 100%;
+    /* Full width button */
+    font-size: 1em;
+}
+
+#authContainer button:hover {
+    background-color: #0056b3;
+}
+
+#authContainer a#toggleAuthLink {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    display: block;
+    margin-top: 1em;
+    font-size: 0.9em;
+}
+
+#authContainer p#loginMessage,
+#authContainer p#registerMessage {
+    min-height: 1.2em;
+    margin-top: 1em;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+
+/* Logged-in View Container Layout */
+#loggedInView {
+    display: grid;
+    /* Adjusted columns for better balance */
+    grid-template-columns: 250px 1fr 250px;
+    grid-template-rows: auto 1fr;
+    /* Top row auto, bottom row takes remaining space */
+    grid-template-areas:
+        "profile center leaderboard"
+        "map     center leaderboard";
+    height: 100vh;
+    /* Full viewport height */
+    padding: 25px;
+    gap: 25px;
+    /* Spacing between grid items */
+    box-sizing: border-box;
+    /* Include padding in height calculation */
+}
+
+/* Area Styling */
+#profileArea,
+#mapArea,
+#centerArea,
+#leaderboardArea {
+    background: rgba(255, 255, 255, 0.8);
+    /* Slightly transparent white background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    /* Use flexbox for content alignment within areas */
+    flex-direction: column;
+    /* Stack content vertically by default */
+}
+
+/* Assign Grid Areas */
+#profileArea {
+    grid-area: profile;
+    text-align: center;
+    align-items: center;
+}
+
+#mapArea {
+    grid-area: map;
+    padding: 0;
+    /* Remove padding to let iframe fill */
+    overflow: hidden;
+}
+
+/* Let iframe fill */
+#centerArea {
+    grid-area: center;
+    align-items: center;
+    justify-content: center;
+}
+
+#leaderboardArea {
+    grid-area: leaderboard;
+}
+
+/* Specific Element Styling within Areas */
+
+/* Profile Area */
+#profileArea img#user-avatar {
+    width: 100px;
+    /* Fixed size */
+    height: 100px;
+    border-radius: 50%;
+    /* Circular image */
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    object-fit: cover;
+    /* Ensure image covers the area well */
+}
+
+#profileArea h3 {
+    margin: 10px 0 5px 0;
+    font-size: 1.4em;
+    color: #0056b3;
+}
+
+#profileArea p {
+    margin: 5px 0 15px 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+#logoutButton {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+}
+
+#logoutButton:hover {
+    background-color: #c82333;
+}
+
+/* Map Area */
+#mapArea iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 10px;
+    /* Match container radius */
+}
+
+/* Center Area */
+#recycle-logo {
+    /* --- Increased Size --- */
+    width: clamp(150px, 25vw, 250px);
+    /* Made larger: min 150px, preferred 25% viewport width, max 250px */
+    height: auto;
+    margin-bottom: 30px;
+    /* --- Added Transition for Smooth Spin --- */
+    transition: transform 1s linear;
+    /* Animate transform over 1 second */
+}
+
+#recycle-button {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #28a745;
+    /* Bootstrap success green */
+    color: white;
+    text-decoration: none;
+    border: 3px solid black;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#recycle-button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+    /* Slight grow effect */
+}
+
+#recycle-button:active {
+    transform: scale(1);
+    /* Return to normal size when clicked */
+}
+
+/* Leaderboard Area */
+#leaderboardArea h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #0056b3;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+#leaderboard-list {
+    list-style: decimal inside;
+    /* Numbered list */
+    padding: 0;
+    margin: 0;
+    max-height: calc(100% - 60px);
+    /* Allow scrolling if list is too long */
+    overflow-y: auto;
+}
+
+#leaderboard-list li {
+    background-color: #f8f9fa;
+    /* Light grey background for items */
+    border: 1px solid #dee2e6;
+    /* Light border */
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1em;
+    display: flex;
+    /* Use flex to space out name and points */
+    justify-content: space-between;
+}
+
+#leaderboard-list li::marker {
+    font-weight: bold;
+    color: #0056b3;
+    margin-right: 10px;
+}
+
+/* --- Class to Apply Spin --- */
+.spin-logo {
+    transform: rotate(360deg);
+}
+
+/* --- REMOVED OLD SPIN ANIMATION --- */
+/* @keyframes spin { ... } */
+/* .spin { ... } */

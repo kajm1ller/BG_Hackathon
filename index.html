@@ -3,38 +3,52 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>BG Hackathon Project</title>
+    <title>Trashcels Seething</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Basic styling for layout */
+        /* Basic styling for layout - Move detailed styles to style.css */
         body {
             font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: lightblue;
+            /* Background from image */
+        }
+
+        .hidden {
+            display: none !important;
+            /* Helper to hide elements */
+        }
+
+        #authContainer {
+            /* Keep original auth styles for now */
+            margin: 1em auto;
+            /* Center auth form */
             padding: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            /* Make auth stand out */
+            max-width: 300px;
         }
 
-        hr {
-            margin: 1.5em 0;
-        }
-
-        /* Adjusted margin */
-        label {
+        #authContainer label {
             display: block;
             margin-bottom: 0.2em;
             font-weight: bold;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        #authContainer input[type="text"],
+        #authContainer input[type="password"] {
             margin-bottom: 0.8em;
             padding: 0.5em;
-            width: 200px;
+            width: calc(100% - 1.2em);
             border: 1px solid #ccc;
             box-sizing: border-box;
         }
 
-        button,
-        input[type="submit"] {
+        #authContainer button {
             padding: 0.7em 1.5em;
             cursor: pointer;
             background-color: #007bff;
@@ -44,21 +58,11 @@
             margin-right: 5px;
         }
 
-        button:hover,
-        input[type="submit"]:hover {
+        #authContainer button:hover {
             background-color: #0056b3;
         }
 
-        #authContainer,
-        #userInfo,
-        #productSection {
-            margin-bottom: 1em;
-            padding: 1em;
-            border: 1px solid #eee;
-            border-radius: 5px;
-        }
-
-        #toggleAuthLink {
+        #authContainer a {
             cursor: pointer;
             color: blue;
             text-decoration: underline;
@@ -66,38 +70,154 @@
             margin-top: 0.5em;
         }
 
-        /* Made block */
-        #registerMessage,
-        #loginMessage,
-        #pointMessage {
+        #authContainer p {
             min-height: 1.2em;
             margin-top: 0.5em;
             font-weight: bold;
         }
 
-        #product-info img {
-            display: block;
-            margin-top: 1em;
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Responsive image */
-        #userInfo h3 {
+        #authContainer h2 {
             margin-top: 0;
         }
 
-        #sectionSeparator {
-            border: 0;
-            border-top: 1px solid #ccc;
+
+        /* New Logged-in View Container */
+        #loggedInView {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            /* Adjust column ratios as needed */
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "profile center leaderboard"
+                "map     center leaderboard";
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        #profileArea {
+            grid-area: profile;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        #mapArea {
+            grid-area: map;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        #centerArea {
+            grid-area: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #leaderboardArea {
+            grid-area: leaderboard;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        /* Specific element styling */
+        #profileArea img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        #profileArea h3,
+        #profileArea p {
+            margin: 5px 0;
+        }
+
+        #mapArea iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        #recycle-logo {
+            width: 150px;
+            /* Adjust size */
+            height: auto;
+            margin-bottom: 20px;
+            transition: transform 0.5s ease-in-out;
+            /* Smooth transition for spinning */
+        }
+
+        #recycle-button {
+            display: inline-block;
+            /* Allow padding */
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            /* Green background */
+            color: white;
+            text-decoration: none;
+            /* Remove underline from link */
+            border: 2px solid black;
+            /* Black border */
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #recycle-button:hover {
+            background-color: #45a049;
+        }
+
+        #leaderboardArea h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        #leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #leaderboard-list li {
+            background-color: white;
+            border: 1px solid black;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        #logoutButton {
+            /* Style logout to fit better */
+            margin-top: 15px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #logoutButton:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>User Authentication & Product Info</h1>
     <div id="authContainer">
+        <h1>Trashcels Seething</h1>
         <div id="loginSection">
             <h2>Login</h2>
             <form id="loginForm">
@@ -114,7 +234,7 @@
             <p id="loginMessage"></p>
         </div>
 
-        <div id="registerSection" style="display: none;">
+        <div id="registerSection" class="hidden">
             <h2>Register</h2>
             <form id="registerForm">
                 <div>
@@ -133,63 +253,60 @@
     </div>
 
 
-    <div id="userInfo" style="display: none;">
-        <h3>Welcome, <span id="userName"></span>!</h3>
-        <p>Points: <span id="userPoints"></span></p>
-        <button id="logoutButton">Logout</button>
-    </div>
+    <div id="loggedInView" class="hidden">
+        <div id="profileArea">
+            <img src="https://img.icons8.com/ios-glyphs/90/user--v1.png" alt="User Avatar" id="user-avatar">
+            <h3><span id="user-name-display">USERNAME</span></h3>
+            <p>Points: <span id="user-points-display">0</span></p>
+            <button id="logoutButton">Logout</button>
+        </div>
 
-    <hr id="sectionSeparator" style="display: none;">
-    <div id="productSection" style="display: none;">
-        <h2 id="Text">Product Information</h2> <label for="myText">Barcode:</label> <input type="text" id="myText"
-            value="Enter Barcode Here">
-        <button type="button" id="getInfoButton">Get Info</button>
-        <button type="button" id="addPointButton" style="margin-left: 10px;">Add Point</button>
-        <p id="pointMessage"></p>
-        <div id="product-info" style="margin-top: 1em;">
-            <p><strong>Name:</strong> <span id="product-name"></span></p>
-            <p><strong>Description/Efficiency:</strong> <span id="energy-efficiency"></span></p> <img src="" id="pic"
-                alt="Product Image" />
+        <div id="mapArea">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12016.06499078078!2d-83.64398404699648!3d41.37817680883485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883c7c03965f8b47%3A0x84ba3761e9f30093!2sBowling%20Green%20State%20University!5e0!3m2!1sen!2sus!4v1712355319889!5m2!1sen!2sus"
+                style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+
+        <div id="centerArea">
+            <img id="recycle-logo"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Recycle001.svg/1024px-Recycle001.svg.png"
+                alt="Recycling Logo">
+            <a href="Scanner.html" id="recycle-button">Go Recycle!</a>
+        </div>
+
+        <div id="leaderboardArea">
+            <h2>Leaderboard</h2>
+            <ol id="leaderboard-list">
+                <li>Loading...</li>
+            </ol>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/scanbot-web-sdk@7.1.0/bundle/ScanbotSDK.ui2.min.js"></script>
-    <script src="./barcode.js"></script>
     <script>
-        // --- Helper Function to Get Elements ---
+
         function getElement(id) {
-            const element = document.getElementById(id);
-            if (!element) {
-                console.error(`Element with ID "${id}" not found.`);
-                // Optional: throw new Error(`Element with ID "${id}" not found.`);
-            }
-            return element;
+            return document.getElementById(id);
         }
 
         // --- Toggle Auth Forms ---
         function toggleAuthForms() {
-            const loginSection = getElement('loginSection');
-            const registerSection = getElement('registerSection');
-            const toggleLink = getElement('toggleAuthLink');
+            getElement('loginSection').classList.toggle('hidden');
+            getElement('registerSection').classList.toggle('hidden');
+            const link = getElement('toggleAuthLink');
             const loginMsg = getElement('loginMessage');
             const registerMsg = getElement('registerMessage');
 
-            if (!loginSection || !registerSection || !toggleLink) return;
-
-            if (loginSection.style.display === 'none') {
-                loginSection.style.display = 'block';
-                registerSection.style.display = 'none';
-                toggleLink.textContent = 'Need to Register?';
-                if (registerMsg) registerMsg.textContent = '';
-            } else {
-                loginSection.style.display = 'none';
-                registerSection.style.display = 'block';
-                toggleLink.textContent = 'Already have an account? Login.';
+            if (getElement('loginSection').classList.contains('hidden')) {
+                link.textContent = 'Already have an account? Login.';
                 if (loginMsg) loginMsg.textContent = '';
+            } else {
+                link.textContent = 'Need to Register?';
+                if (registerMsg) registerMsg.textContent = '';
             }
         }
 
-        // --- Registration Handler ---
+        // --- Registration Handler (Fixed duplicate response) ---
         async function handleRegister(event) {
             event.preventDefault();
             const form = event.target;
@@ -200,282 +317,185 @@
             messageElement.textContent = 'Registering...';
             messageElement.style.color = 'black';
 
+            if (password.length < 4) {
+                messageElement.textContent = 'Password must be at least 4 characters long';
+                messageElement.style.color = 'red';
+                return;
+            }
 
             try {
-                const response = await fetch('/register', {
+                // Use relative path for API call
+                const response = await fetch('/register', { // Use relative path
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: name, password: password })
                 });
-                const result = await response.json(); // Always try to parse JSON
-                if (response.ok) { // Status 200-299
+                const result = await response.json();
+                if (response.ok) {
                     messageElement.textContent = 'Registration successful! Please login.';
                     messageElement.style.color = 'green';
                     form.reset();
                     toggleAuthForms(); // Switch to login form
                 } else {
-                    // Use error message from server response if available
                     messageElement.textContent = `Registration failed: ${result.error || response.statusText || 'Unknown server error'}`;
                     messageElement.style.color = 'red';
                 }
             } catch (error) {
                 console.error("Client-side registration error:", error);
-                messageElement.textContent = 'An error occurred during registration (check console).';
+                messageElement.textContent = 'An error occurred (check console).';
                 messageElement.style.color = 'red';
             }
         }
 
-        // --- Login Handler ---
+        // --- Login Handler (Reverted API path) ---
         async function handleLogin(event) {
             event.preventDefault();
             const form = event.target;
             const name = form.name.value;
             const password = form.password.value;
             const messageElement = getElement('loginMessage');
-            const userInfoDiv = getElement('userInfo');
             const authContainer = getElement('authContainer');
-            const toggleLink = getElement('toggleAuthLink'); // Although link is inside container, hide separately
-            const productSection = getElement('productSection');
-            const separator = getElement('sectionSeparator');
+            const loggedInView = getElement('loggedInView');
 
-            if (!messageElement || !userInfoDiv || !authContainer || !toggleLink || !productSection || !separator) return;
+            if (!messageElement || !authContainer || !loggedInView) return;
             messageElement.textContent = 'Logging in...';
             messageElement.style.color = 'black';
 
-
             try {
-                const response = await fetch('/login', {
+                // Use relative path for API call
+                const response = await fetch('/login', { // Use relative path
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: name, password: password })
                 });
-                const result = await response.json(); // Always try to parse JSON
+                const result = await response.json();
 
                 if (response.ok) { // Status 200-299
-                    authContainer.style.display = 'none';
-                    // toggleLink.style.display = 'none'; // Link is inside container now
-                    getElement('userName').textContent = result.name || '';
-                    getElement('userPoints').textContent = result.points !== undefined ? result.points : '';
-                    userInfoDiv.style.display = 'block';
-                    productSection.style.display = 'block';
-                    separator.style.display = 'block';
+                    authContainer.classList.add('hidden'); // Hide login form
+                    loggedInView.classList.remove('hidden'); // Show dashboard
+
+                    // Populate user info
+                    getElement('user-name-display').textContent = result.name || 'User';
+                    getElement('user-points-display').textContent = result.points !== undefined ? result.points : '0';
+
+                    // Fetch leaderboard
+                    await fetchLeaderboard();
+
                     form.reset();
-                    messageElement.textContent = ''; // Clear login message on success
+                    messageElement.textContent = ''; // Clear login message
                 } else {
                     messageElement.textContent = `Login failed: ${result.error || response.statusText || 'Invalid credentials'}`;
                     messageElement.style.color = 'red';
-                    userInfoDiv.style.display = 'none';
-                    productSection.style.display = 'none';
-                    separator.style.display = 'none';
+                    loggedInView.classList.add('hidden'); // Ensure dashboard is hidden
                 }
             } catch (error) {
                 console.error("Client-side login error:", error);
                 messageElement.textContent = 'An error occurred during login (check console).';
                 messageElement.style.color = 'red';
-                userInfoDiv.style.display = 'none';
-                productSection.style.display = 'none';
-                separator.style.display = 'none';
+                loggedInView.classList.add('hidden');
             }
         }
 
-        // --- Logout Handler ---
+        // --- Logout Handler (Modified) ---
         function handleLogout() {
-            const userInfoDiv = getElement('userInfo');
-            const loginMessageElement = getElement('loginMessage');
             const authContainer = getElement('authContainer');
-            // const toggleLink = getElement('toggleAuthLink'); // Link is inside container
-            const productSection = getElement('productSection');
-            const loginSection = getElement('loginSection');
-            const registerSection = getElement('registerSection');
-            const separator = getElement('sectionSeparator');
-            const pointMsg = getElement('pointMessage'); // Get point message element
+            const loggedInView = getElement('loggedInView');
+            const loginMessageElement = getElement('loginMessage');
 
-            if (!userInfoDiv || !authContainer || !productSection || !loginSection || !registerSection || !separator) return;
+            if (!authContainer || !loggedInView) return;
 
-            // Clear user info and messages
-            getElement('userName').textContent = '';
-            getElement('userPoints').textContent = '';
+            // Hide dashboard, show auth container
+            loggedInView.classList.add('hidden');
+            authContainer.classList.remove('hidden');
+
+            // Reset forms and messages
+            getElement('loginForm').reset();
+            getElement('registerForm').reset();
             if (loginMessageElement) {
                 loginMessageElement.textContent = 'Logged out.';
                 loginMessageElement.style.color = 'black';
-                // Clear message after a delay
                 setTimeout(() => { if (loginMessageElement) loginMessageElement.textContent = ''; }, 3000);
             }
             getElement('registerMessage').textContent = '';
-            if (pointMsg) pointMsg.textContent = ''; // Clear point message on logout
-
-
-            // Hide user info and product section, show auth container
-            userInfoDiv.style.display = 'none';
-            productSection.style.display = 'none';
-            separator.style.display = 'none';
-            authContainer.style.display = 'block';
-            // toggleLink.style.display = 'block'; // Link is inside container
 
             // Ensure login form is visible and registration is hidden on logout
-            loginSection.style.display = 'block';
-            registerSection.style.display = 'none';
-            getElement('toggleAuthLink').textContent = 'Need to Register?'; // Reset toggle link text
-
-            // Clear product info on logout
-            getElement("product-name").textContent = "";
-            getElement("energy-efficiency").textContent = "";
-            getElement("pic").src = "";
-            getElement("myText").value = "Enter Barcode Here"; // Reset input
+            if (getElement('registerSection').classList.contains('hidden') == false) {
+                toggleAuthForms(); // If register was visible, toggle back to login
+            }
 
             console.log("User logged out");
         }
 
-        // --- Add Point Handler ---
-        async function addPoint() {
-            const userNameElement = getElement('userName');
-            const userPointsElement = getElement('userPoints');
-            const pointMessageElement = getElement('pointMessage');
-
-            if (!userNameElement || !userPointsElement || !pointMessageElement) {
-                console.error("Required elements for adding points not found.");
-                return;
-            }
-
-            const currentUserName = userNameElement.textContent;
-            if (!currentUserName) {
-                pointMessageElement.textContent = 'Error: Could not identify user.';
-                pointMessageElement.style.color = 'red';
-                return;
-            }
-
-            pointMessageElement.textContent = 'Adding point...';
-            pointMessageElement.style.color = 'black';
+        // --- Leaderboard Fetching (Reverted API path) ---
+        async function fetchLeaderboard() {
+            const listElement = getElement('leaderboard-list');
+            if (!listElement) return;
+            listElement.innerHTML = '<li>Loading...</li>'; // Clear previous entries
 
             try {
-                const response = await fetch('/add-point', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    // SECURITY NOTE: Sending username like this is insecure. Use sessions/tokens in production.
-                    body: JSON.stringify({ name: currentUserName })
-                });
+                // Use relative path for API call
+                const response = await fetch('/leaderboard'); // Use relative path
+                if (!response.ok) {
+                    // Throw error with status text to be caught below
+                    const errorText = await response.text(); // Get error text from server if available
+                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText} - ${errorText}`);
+                }
+                const leaders = await response.json();
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    pointMessageElement.textContent = `Point added! Total: ${result.newPoints}`;
-                    pointMessageElement.style.color = 'green';
-                    userPointsElement.textContent = result.newPoints; // Update points display
-                    // Clear message after a delay
-                    setTimeout(() => { if (pointMessageElement) pointMessageElement.textContent = ''; }, 3000);
+                listElement.innerHTML = ''; // Clear loading message
+                if (leaders && leaders.length > 0) {
+                    leaders.forEach(leader => {
+                        const li = document.createElement('li');
+                        // Display name and points separately for potential styling
+                        li.innerHTML = `<span>${leader.name}</span><span>${leader.points} Pts</span>`;
+                        listElement.appendChild(li);
+                    });
                 } else {
-                    pointMessageElement.textContent = `Error: ${result.error || 'Could not add point.'}`;
-                    pointMessageElement.style.color = 'red';
+                    listElement.innerHTML = '<li>Leaderboard is empty.</li>';
                 }
             } catch (error) {
-                console.error("Client-side add point error:", error);
-                pointMessageElement.textContent = 'An error occurred while adding point (check console).';
-                pointMessageElement.style.color = 'red';
+                console.error("Error fetching leaderboard:", error);
+                listElement.innerHTML = `<li>Error loading leaderboard. ${error.message ? `(${error.message})` : ''}</li>`;
             }
         }
 
-        // --- Product Info Handler ---
-        async function fetchProductInfo() {
-            const barcodeInput = getElement("myText");
-            const productNameEl = getElement("product-name");
-            const energyEl = getElement("energy-efficiency");
-            const picEl = getElement("pic");
-
-            if (!barcodeInput || !productNameEl || !energyEl || !picEl) return;
-
-            let barcode = barcodeInput.value;
-            productNameEl.textContent = "Loading...";
-            energyEl.textContent = "";
-            picEl.src = "";
-            picEl.alt = "Loading product image";
-
-
-            try {
-                const response = await fetch('/get-product-info', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ barcode: barcode })
-                });
-
-                const data = await response.json(); // Always try to parse JSON
-
-                if (response.ok) {
-                    productNameEl.textContent = data.name || "N/A";
-                    energyEl.textContent = data.energyEfficiency || "N/A";
-                    picEl.src = data.pic || "";
-                    picEl.alt = data.name || "Product Image";
-                } else {
-                    console.error('Product info error:', response.status, data);
-                    productNameEl.textContent = "Error";
-                    energyEl.textContent = data.error || 'Could not retrieve product info.';
-                    picEl.alt = "Error loading image";
-                    // alert(`Error: ${data.error || 'Could not retrieve product info.'}`);
-                }
-            } catch (error) {
-                console.error("Client-side error fetching product info:", error);
-                productNameEl.textContent = "Error";
-                energyEl.textContent = 'An error occurred while fetching data (check console).';
-                picEl.alt = "Error loading image";
-                // alert('An error occurred while fetching data.');
-            }
-        }
 
         // --- Event Listeners Setup ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM fully loaded and parsed");
+            console.log("DOM fully loaded");
 
-            // Get elements
             const registerForm = getElement('registerForm');
             const loginForm = getElement('loginForm');
             const logoutButton = getElement('logoutButton');
             const toggleLink = getElement('toggleAuthLink');
-            const getInfoBtn = getElement('getInfoButton');
-            const addPointBtn = getElement('addPointButton');
+            const recycleButton = getElement('recycle-button');
+            const recycleLogo = getElement('recycle-logo'); // Get logo element
 
-            // Attach listeners
-            if (registerForm) {
-                registerForm.addEventListener('submit', handleRegister);
-                console.log("Register form listener attached.");
-            }
-            if (loginForm) {
-                loginForm.addEventListener('submit', handleLogin);
-                console.log("Login form listener attached.");
-            }
-            if (logoutButton) {
-                logoutButton.addEventListener('click', handleLogout);
-                console.log("Logout button listener attached.");
-            }
-            if (toggleLink) {
-                toggleLink.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent link default action if it's an <a>
-                    toggleAuthForms();
+            if (registerForm) registerForm.addEventListener('submit', handleRegister);
+            if (loginForm) loginForm.addEventListener('submit', handleLogin);
+            if (logoutButton) logoutButton.addEventListener('click', handleLogout);
+            if (toggleLink) toggleLink.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(); });
+
+            // --- ADDED Hover Listeners for Recycle Button ---
+            if (recycleButton && recycleLogo) {
+                recycleButton.addEventListener('mouseenter', () => {
+                    recycleLogo.classList.add('spin-logo'); // Add class on hover over button
                 });
-                console.log("Toggle link listener attached.");
-            }
-            if (getInfoBtn) {
-                getInfoBtn.addEventListener('click', fetchProductInfo);
-                console.log("Get Info button listener attached.");
-            }
-            if (addPointBtn) {
-                addPointBtn.addEventListener('click', addPoint);
-                console.log("Add Point button listener attached.");
+                recycleButton.addEventListener('mouseleave', () => {
+                    recycleLogo.classList.remove('spin-logo'); // Remove class when mouse leaves button
+                });
+                console.log("Recycle button hover listeners attached.");
             }
 
-            // Set initial state explicitly
-            const authContainer = getElement('authContainer');
-            const productSection = getElement('productSection');
-            const userInfo = getElement('userInfo');
-            const separator = getElement('sectionSeparator');
 
-            if (authContainer) authContainer.style.display = 'block';
-            if (getElement('loginSection')) getElement('loginSection').style.display = 'block';
-            if (getElement('registerSection')) getElement('registerSection').style.display = 'none';
-            if (productSection) productSection.style.display = 'none';
-            if (userInfo) userInfo.style.display = 'none';
-            if (separator) separator.style.display = 'none';
-            // Toggle link visibility is handled by authContainer visibility
+            // Initial state: Ensure loggedInView is hidden
+            getElement('loggedInView').classList.add('hidden');
+            getElement('authContainer').classList.remove('hidden');
+            // Ensure register section starts hidden
+            getElement('registerSection').classList.add('hidden');
 
-            console.log("Initial state set.");
+
+            console.log("Initial state set, listeners attached.");
         });
     </script>
 
