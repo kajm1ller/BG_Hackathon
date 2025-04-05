@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const apiKey = 'sqg9bhb3rfi24i8ynvr00mbdgqjl70';
 http.createServer(async (req, res) => {
     if (req.url === '/') {
-        // Example: Extract barcode from a query parameter
+
         const urlParams = new URLSearchParams(req.url.split('?')[1]);
         const barcode = urlParams.get('barcode');
 
