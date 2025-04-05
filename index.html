@@ -4,18 +4,23 @@
 <html lang="en">
 
 <head>
+    <script type="text/javascript" src="script.js"></script>
     <title>bg hackathon 2025 project</title>
 </head>
 
 <body>
-
     <h1 id="Text">Fuck You!</h1>
+    Barcode <input type="text" id="myText" value="Enter Barcode Here">
+    <button onclick="myFunction()">Try it</button>
+    <script>
+        function myFunction() {
+            let barcode = document.getElementById("myText").value;
+            document.getElementById("barcode").textContent = barcode; // Correct way to update text
+            console.log(barcode); // This will now log correctly
+        }
+    </script>
 
+    <p id="barcode"></p>
 
-</body>
-
-<script src="script.js">
-
-</script>
 
 </html>
