@@ -3,56 +3,383 @@
 
 <head>
     <link rel="stylesheet" href="style.css">
-    <title>BG Hackathon 2025 project</title>
+    <title>BG Hackathon Project</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Basic styling for layout */
+        body {
+            font-family: sans-serif;
+            padding: 1em;
+        }
+
+        hr {
+            margin: 2em 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.2em;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            margin-bottom: 0.8em;
+            padding: 0.5em;
+            width: 200px;
+        }
+
+        button {
+            padding: 0.7em 1.5em;
+            cursor: pointer;
+        }
+
+        #authContainer,
+        #userInfo,
+        #productSection {
+            margin-bottom: 1em;
+        }
+
+        #toggleAuthLink {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        #registerMessage,
+        #loginMessage {
+            min-height: 1.2em;
+            /* Prevent layout jumps */
+        }
+
+        #product-info img {
+            display: block;
+            margin-top: 1em;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="document-scanner-container" style="width: 100%; height: 100%;"></div>
 
-    <h1 id="Text">Product Information</h1>
-    Barcode: <input type="text" id="myText" value="Enter Barcode Here">
-    <button onclick="myFunction()">Get Info</button>
+    <div id="authContainer">
+        <div id="loginSection">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div>
+                    <label for="loginName">Name:</label>
+                    <input type="text" id="loginName" name="name" required>
+                </div>
+                <div>
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <p id="loginMessage"></p>
+        </div>
 
-    <div id="product-info">
-        <p><strong>Name:</strong> <span id="product-name"></span></p>
-        <p><strong>Energy Efficiency:</strong> <span id="energy-efficiency"></span></p>
-        <img src="" id="pic" width="200px" height="400px" />
-
+        <div id="registerSection" style="display: none;">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div>
+                    <label for="regName">Name:</label>
+                    <input type="text" id="regName" name="name" required>
+                </div>
+                <div>
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <p id="registerMessage"></p>
+        </div>
     </div>
 
+    <p><a id="toggleAuthLink">Need to Register?</a></p>
+
+    <div id="userInfo" style="display: none;">
+        <h3>Welcome, <span id="userName"></span>!</h3>
+        <p>Points: <span id="userPoints"></span></p>
+        <button id="logoutButton">Logout</button>
+    </div>
+
+    <hr id="sectionSeparator" style="display: none;">
+    <div id="productSection" style="display: none;">
+        <h1 id="Text">Product Information</h1>
+        Barcode: <input type="text" id="myText" value="Enter Barcode Here">
+        <button type="button" id="getInfoButton">Get Info</button>
+
+        <div id="product-info">
+            <p><strong>Name:</strong> <span id="product-name"></span></p>
+            <p><strong>Energy Efficiency:</strong> <span id="energy-efficiency"></span></p>
+            <img src="" id="pic" alt="Product Image" width="200px" height="400px" />
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/scanbot-web-sdk@7.1.0/bundle/ScanbotSDK.ui2.min.js"></script>
+    <script src="./barcode.js"></script>
+    <script>
+        // --- Helper Function to Get Elements ---
+        function getElement(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.error(`Element with ID "${id}" not found.`);
+            }
+            return element;
+        }
+
+        // --- Toggle Auth Forms ---
+        function toggleAuthForms() {
+            const loginSection = getElement('loginSection');
+            const registerSection = getElement('registerSection');
+            const toggleLink = getElement('toggleAuthLink');
+            const loginMsg = getElement('loginMessage');
+            const registerMsg = getElement('registerMessage');
+
+            if (!loginSection || !registerSection || !toggleLink) return; // Exit if elements missing
+
+            if (loginSection.style.display === 'none') {
+                // Show Login, Hide Register
+                loginSection.style.display = 'block';
+                registerSection.style.display = 'none';
+                toggleLink.textContent = 'Need to Register?';
+                if (registerMsg) registerMsg.textContent = ''; // Clear message
+            } else {
+                // Show Register, Hide Login
+                loginSection.style.display = 'none';
+                registerSection.style.display = 'block';
+                toggleLink.textContent = 'Already have an account? Login.';
+                if (loginMsg) loginMsg.textContent = ''; // Clear message
+            }
+        }
+
+        // --- Registration Handler ---
+        async function handleRegister(event) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form.name.value;
+            const password = form.password.value;
+            const messageElement = getElement('registerMessage');
+            if (!messageElement) return;
+            messageElement.textContent = '';
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, password: password })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    messageElement.textContent = 'Registration successful! Please login.';
+                    messageElement.style.color = 'green';
+                    form.reset();
+                    toggleAuthForms(); // Switch to login form after successful registration
+                } else {
+                    messageElement.textContent = `Registration failed: ${result.error || 'Unknown error'}`;
+                    messageElement.style.color = 'red';
+                }
+            } catch (error) {
+                console.error("Client-side registration error:", error);
+                messageElement.textContent = 'An error occurred during registration.';
+                messageElement.style.color = 'red';
+            }
+        }
+
+        // --- Login Handler ---
+        async function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form.name.value;
+            const password = form.password.value;
+            const messageElement = getElement('loginMessage');
+            const userInfoDiv = getElement('userInfo');
+            const authContainer = getElement('authContainer');
+            const toggleLink = getElement('toggleAuthLink');
+            const productSection = getElement('productSection');
+            const separator = getElement('sectionSeparator');
+
+
+            if (!messageElement || !userInfoDiv || !authContainer || !toggleLink || !productSection || !separator) return; // Exit if critical elements missing
+
+            messageElement.textContent = '';
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, password: password })
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Login successful: Hide auth, show user info and product section
+                    authContainer.style.display = 'none';
+                    toggleLink.style.display = 'none';
+                    getElement('userName').textContent = result.name || '';
+                    getElement('userPoints').textContent = result.points !== undefined ? result.points : '';
+                    userInfoDiv.style.display = 'block';
+                    productSection.style.display = 'block';
+                    separator.style.display = 'block'; // Show separator
+                    form.reset();
+                } else {
+                    messageElement.textContent = `Login failed: ${result.error || 'Invalid credentials'}`;
+                    messageElement.style.color = 'red';
+                    userInfoDiv.style.display = 'none';
+                    productSection.style.display = 'none';
+                    separator.style.display = 'none'; // Hide separator
+                }
+            } catch (error) {
+                console.error("Client-side login error:", error);
+                messageElement.textContent = 'An error occurred during login.';
+                messageElement.style.color = 'red';
+                userInfoDiv.style.display = 'none';
+                productSection.style.display = 'none';
+                separator.style.display = 'none'; // Hide separator
+            }
+        }
+
+        // --- Logout Handler ---
+        function handleLogout() {
+            const userInfoDiv = getElement('userInfo');
+            const loginMessageElement = getElement('loginMessage');
+            const authContainer = getElement('authContainer');
+            const toggleLink = getElement('toggleAuthLink');
+            const productSection = getElement('productSection');
+            const loginSection = getElement('loginSection');
+            const registerSection = getElement('registerSection');
+            const separator = getElement('sectionSeparator');
+
+            if (!userInfoDiv || !authContainer || !toggleLink || !productSection || !loginSection || !registerSection || !separator) return; // Exit if critical elements missing
+
+
+            // Clear user info and messages
+            getElement('userName').textContent = '';
+            getElement('userPoints').textContent = '';
+            if (loginMessageElement) {
+                loginMessageElement.textContent = 'Logged out.';
+                loginMessageElement.style.color = 'black';
+            }
+            getElement('registerMessage').textContent = ''; // Also clear register message
+
+
+            // Hide user info and product section, show auth container and toggle link
+            userInfoDiv.style.display = 'none';
+            productSection.style.display = 'none';
+            separator.style.display = 'none'; // Hide separator
+            authContainer.style.display = 'block';
+            toggleLink.style.display = 'block';
+
+            // Ensure login form is visible and registration is hidden on logout
+            loginSection.style.display = 'block';
+            registerSection.style.display = 'none';
+            toggleLink.textContent = 'Need to Register?'; // Reset toggle link text
+
+            // Clear product info on logout
+            getElement("product-name").textContent = "";
+            getElement("energy-efficiency").textContent = "";
+            getElement("pic").src = "";
+            getElement("myText").value = "Enter Barcode Here"; // Reset input
+
+            console.log("User logged out");
+        }
+
+        // --- Product Info Handler ---
+        async function fetchProductInfo() { // Renamed from myFunction to avoid potential conflicts
+            const barcodeInput = getElement("myText");
+            const productNameEl = getElement("product-name");
+            const energyEl = getElement("energy-efficiency");
+            const picEl = getElement("pic");
+
+            if (!barcodeInput || !productNameEl || !energyEl || !picEl) return; // Exit if elements missing
+
+            let barcode = barcodeInput.value;
+            // Clear previous results
+            productNameEl.textContent = "Loading...";
+            energyEl.textContent = "";
+            picEl.src = "";
+
+            try {
+                const response = await fetch('/get-product-info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ barcode: barcode })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    productNameEl.textContent = data.name || "N/A";
+                    energyEl.textContent = data.energyEfficiency || "N/A";
+                    picEl.src = data.pic || "";
+                    picEl.alt = data.name || "Product Image"; // Add alt text
+                } else {
+                    const errorData = await response.json();
+                    console.error('Product info error:', response.status, errorData);
+                    productNameEl.textContent = "Error";
+                    energyEl.textContent = errorData.error || 'Could not retrieve product info.';
+                    alert(`Error: ${errorData.error || 'Could not retrieve product info.'}`);
+                }
+            } catch (error) {
+                console.error("Client-side error fetching product info:", error);
+                productNameEl.textContent = "Error";
+                energyEl.textContent = 'An error occurred while fetching data.';
+                alert('An error occurred while fetching data.');
+            }
+        }
+
+        // --- Event Listeners Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM fully loaded and parsed");
+
+            const registerForm = getElement('registerForm');
+            const loginForm = getElement('loginForm');
+            const logoutButton = getElement('logoutButton');
+            const toggleLink = getElement('toggleAuthLink');
+            const getInfoBtn = getElement('getInfoButton'); // Get product info button
+
+
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+                console.log("Register form listener attached.");
+            }
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+                console.log("Login form listener attached.");
+            }
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+                console.log("Logout button listener attached.");
+            }
+            if (toggleLink) {
+                toggleLink.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent link default action
+                    toggleAuthForms();
+                });
+                console.log("Toggle link listener attached.");
+            }
+            if (getInfoBtn) {
+                // Attach listener to the new button ID
+                getInfoBtn.addEventListener('click', fetchProductInfo);
+                console.log("Get Info button listener attached.");
+            }
+
+            // Set initial state explicitly
+            const authContainer = getElement('authContainer');
+            const productSection = getElement('productSection');
+            const userInfo = getElement('userInfo');
+            const separator = getElement('sectionSeparator');
+
+
+            if (authContainer) authContainer.style.display = 'block'; // Show auth section initially
+            if (getElement('loginSection')) getElement('loginSection').style.display = 'block'; // Show login form initially
+            if (getElement('registerSection')) getElement('registerSection').style.display = 'none'; // Hide register form initially
+            if (productSection) productSection.style.display = 'none'; // Hide product section initially
+            if (userInfo) userInfo.style.display = 'none'; // Hide user info initially
+            if (separator) separator.style.display = 'none'; // Hide separator initially
+            if (toggleLink) toggleLink.style.display = 'block'; // Show toggle link initially
+
+            console.log("Initial state set.");
+        });
+    </script>
 
 </body>
-
-<script src="https://cdn.jsdelivr.net/npm/scanbot-web-sdk@7.1.0/bundle/ScanbotSDK.ui2.min.js"></script>
-<script src="./barcode.js"></script>
-<script src="./script.js"></script>
-<script>
-    async function myFunction() {
-        let barcode = document.getElementById("myText").value;
-
-        try {
-            const response = await fetch('/get-product-info', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ barcode: barcode })
-            });
-
-            if (response.status === 200) {
-                const data = await response.json();
-                document.getElementById("product-name").textContent = data.name;
-                document.getElementById("energy-efficiency").textContent = data.energyEfficiency;
-                document.getElementById("pic").src = data.pic;
-            } else {
-                alert('Error: Could not retrieve product info.');
-            }
-        } catch (error) {
-            console.error("Client-side error:", error);
-            alert('An error occurred while fetching data.');
-        }
-    }
-</script>
 
 </html>
