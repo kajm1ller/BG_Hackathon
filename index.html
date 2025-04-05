@@ -1,26 +1,49 @@
 <!DOCTYPE html>
-
-<link rel="stylesheet" href="style.css">
 <html lang="en">
 
 <head>
-    <script type="text/javascript" src="script.js"></script>
-    <title>bg hackathon 2025 project</title>
+    <link rel="stylesheet" href="style.css">
+    <title>BG Hackathon 2025 project</title>
 </head>
 
 <body>
-    <h1 id="Text">Fuck You!</h1>
-    Barcode <input type="text" id="myText" value="Enter Barcode Here">
-    <button onclick="myFunction()">Try it</button>
+
+    <h1 id="Text">Product Information</h1>
+    Barcode: <input type="text" id="myText" value="Enter Barcode Here">
+    <button onclick="myFunction()">Get Info</button>
+
+    <div id="product-info">
+        <p><strong>Name:</strong> <span id="product-name"></span></p>
+        <p><strong>Energy Efficiency:</strong> <span id="energy-efficiency"></span></p>
+    </div>
+
     <script>
-        function myFunction() {
+        async function myFunction() {
             let barcode = document.getElementById("myText").value;
-            document.getElementById("barcode").textContent = barcode; // just to ensure that our barcode value is being sent through 
-            console.log(barcode);
+
+            try {
+                const response = await fetch('/get-product-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ barcode: barcode })
+                });
+
+                if (response.status === 200) {
+                    const data = await response.json();
+                    document.getElementById("product-name").textContent = data.name;
+                    document.getElementById("energy-efficiency").textContent = data.energyEfficiency;
+                } else {
+                    alert('Error: Could not retrieve product info.');
+                }
+            } catch (error) {
+                console.error("Client-side error:", error);
+                alert('An error occurred while fetching data.');
+            }
         }
     </script>
 
-    <p id="barcode"></p>
-
+</body>
 
 </html>
