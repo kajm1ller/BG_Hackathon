@@ -4,9 +4,11 @@
 <head>
     <link rel="stylesheet" href="style.css">
     <title>BG Hackathon 2025 project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
+    <div id="document-scanner-container" style="width: 100%; height: 100%;"></div>
 
     <h1 id="Text">Product Information</h1>
     Barcode: <input type="text" id="myText" value="Enter Barcode Here">
@@ -18,8 +20,13 @@
         <img src="" id="pic" width="200px" height="400px" />
 
     </div>
+    
 
-    <script>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/scanbot-web-sdk@7.1.0/bundle/ScanbotSDK.ui2.min.js"></script>
+<script src="./barcode.js"></script>
+<script>
         async function myFunction() {
             let barcode = document.getElementById("myText").value;
 
@@ -45,8 +52,6 @@
                 alert('An error occurred while fetching data.');
             }
         }
-    </script>
-
-</body>
+</script>
 
 </html>
