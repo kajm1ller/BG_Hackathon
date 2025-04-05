@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
     <title>BG Hackathon Project</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,12 +14,14 @@
         }
 
         hr {
-            margin: 2em 0;
+            margin: 1.5em 0;
         }
 
+        /* Adjusted margin */
         label {
             display: block;
             margin-bottom: 0.2em;
+            font-weight: bold;
         }
 
         input[type="text"],
@@ -26,40 +29,74 @@
             margin-bottom: 0.8em;
             padding: 0.5em;
             width: 200px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
         }
 
-        button {
+        button,
+        input[type="submit"] {
             padding: 0.7em 1.5em;
             cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        button:hover,
+        input[type="submit"]:hover {
+            background-color: #0056b3;
         }
 
         #authContainer,
         #userInfo,
         #productSection {
             margin-bottom: 1em;
+            padding: 1em;
+            border: 1px solid #eee;
+            border-radius: 5px;
         }
 
         #toggleAuthLink {
             cursor: pointer;
             color: blue;
             text-decoration: underline;
+            display: block;
+            margin-top: 0.5em;
         }
 
+        /* Made block */
         #registerMessage,
-        #loginMessage {
+        #loginMessage,
+        #pointMessage {
             min-height: 1.2em;
-            /* Prevent layout jumps */
+            margin-top: 0.5em;
+            font-weight: bold;
         }
 
         #product-info img {
             display: block;
             margin-top: 1em;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Responsive image */
+        #userInfo h3 {
+            margin-top: 0;
+        }
+
+        #sectionSeparator {
+            border: 0;
+            border-top: 1px solid #ccc;
         }
     </style>
 </head>
 
 <body>
 
+    <h1>User Authentication & Product Info</h1>
     <div id="authContainer">
         <div id="loginSection">
             <h2>Login</h2>
@@ -92,9 +129,9 @@
             </form>
             <p id="registerMessage"></p>
         </div>
+        <a id="toggleAuthLink">Need to Register?</a>
     </div>
 
-    <p><a id="toggleAuthLink">Need to Register?</a></p>
 
     <div id="userInfo" style="display: none;">
         <h3>Welcome, <span id="userName"></span>!</h3>
@@ -104,14 +141,15 @@
 
     <hr id="sectionSeparator" style="display: none;">
     <div id="productSection" style="display: none;">
-        <h1 id="Text">Product Information</h1>
-        Barcode: <input type="text" id="myText" value="Enter Barcode Here">
+        <h2 id="Text">Product Information</h2> <label for="myText">Barcode:</label> <input type="text" id="myText"
+            value="Enter Barcode Here">
         <button type="button" id="getInfoButton">Get Info</button>
-
-        <div id="product-info">
+        <button type="button" id="addPointButton" style="margin-left: 10px;">Add Point</button>
+        <p id="pointMessage"></p>
+        <div id="product-info" style="margin-top: 1em;">
             <p><strong>Name:</strong> <span id="product-name"></span></p>
-            <p><strong>Energy Efficiency:</strong> <span id="energy-efficiency"></span></p>
-            <img src="" id="pic" alt="Product Image" width="200px" height="400px" />
+            <p><strong>Description/Efficiency:</strong> <span id="energy-efficiency"></span></p> <img src="" id="pic"
+                alt="Product Image" />
         </div>
     </div>
 
@@ -123,6 +161,7 @@
             const element = document.getElementById(id);
             if (!element) {
                 console.error(`Element with ID "${id}" not found.`);
+                // Optional: throw new Error(`Element with ID "${id}" not found.`);
             }
             return element;
         }
@@ -135,20 +174,18 @@
             const loginMsg = getElement('loginMessage');
             const registerMsg = getElement('registerMessage');
 
-            if (!loginSection || !registerSection || !toggleLink) return; // Exit if elements missing
+            if (!loginSection || !registerSection || !toggleLink) return;
 
             if (loginSection.style.display === 'none') {
-                // Show Login, Hide Register
                 loginSection.style.display = 'block';
                 registerSection.style.display = 'none';
                 toggleLink.textContent = 'Need to Register?';
-                if (registerMsg) registerMsg.textContent = ''; // Clear message
+                if (registerMsg) registerMsg.textContent = '';
             } else {
-                // Show Register, Hide Login
                 loginSection.style.display = 'none';
                 registerSection.style.display = 'block';
                 toggleLink.textContent = 'Already have an account? Login.';
-                if (loginMsg) loginMsg.textContent = ''; // Clear message
+                if (loginMsg) loginMsg.textContent = '';
             }
         }
 
@@ -160,7 +197,9 @@
             const password = form.password.value;
             const messageElement = getElement('registerMessage');
             if (!messageElement) return;
-            messageElement.textContent = '';
+            messageElement.textContent = 'Registering...';
+            messageElement.style.color = 'black';
+
 
             try {
                 const response = await fetch('/register', {
@@ -168,19 +207,20 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: name, password: password })
                 });
-                const result = await response.json();
-                if (response.ok) {
+                const result = await response.json(); // Always try to parse JSON
+                if (response.ok) { // Status 200-299
                     messageElement.textContent = 'Registration successful! Please login.';
                     messageElement.style.color = 'green';
                     form.reset();
-                    toggleAuthForms(); // Switch to login form after successful registration
+                    toggleAuthForms(); // Switch to login form
                 } else {
-                    messageElement.textContent = `Registration failed: ${result.error || 'Unknown error'}`;
+                    // Use error message from server response if available
+                    messageElement.textContent = `Registration failed: ${result.error || response.statusText || 'Unknown server error'}`;
                     messageElement.style.color = 'red';
                 }
             } catch (error) {
                 console.error("Client-side registration error:", error);
-                messageElement.textContent = 'An error occurred during registration.';
+                messageElement.textContent = 'An error occurred during registration (check console).';
                 messageElement.style.color = 'red';
             }
         }
@@ -194,14 +234,14 @@
             const messageElement = getElement('loginMessage');
             const userInfoDiv = getElement('userInfo');
             const authContainer = getElement('authContainer');
-            const toggleLink = getElement('toggleAuthLink');
+            const toggleLink = getElement('toggleAuthLink'); // Although link is inside container, hide separately
             const productSection = getElement('productSection');
             const separator = getElement('sectionSeparator');
 
+            if (!messageElement || !userInfoDiv || !authContainer || !toggleLink || !productSection || !separator) return;
+            messageElement.textContent = 'Logging in...';
+            messageElement.style.color = 'black';
 
-            if (!messageElement || !userInfoDiv || !authContainer || !toggleLink || !productSection || !separator) return; // Exit if critical elements missing
-
-            messageElement.textContent = '';
 
             try {
                 const response = await fetch('/login', {
@@ -209,32 +249,32 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: name, password: password })
                 });
-                const result = await response.json();
+                const result = await response.json(); // Always try to parse JSON
 
-                if (response.ok) {
-                    // Login successful: Hide auth, show user info and product section
+                if (response.ok) { // Status 200-299
                     authContainer.style.display = 'none';
-                    toggleLink.style.display = 'none';
+                    // toggleLink.style.display = 'none'; // Link is inside container now
                     getElement('userName').textContent = result.name || '';
                     getElement('userPoints').textContent = result.points !== undefined ? result.points : '';
                     userInfoDiv.style.display = 'block';
                     productSection.style.display = 'block';
-                    separator.style.display = 'block'; // Show separator
+                    separator.style.display = 'block';
                     form.reset();
+                    messageElement.textContent = ''; // Clear login message on success
                 } else {
-                    messageElement.textContent = `Login failed: ${result.error || 'Invalid credentials'}`;
+                    messageElement.textContent = `Login failed: ${result.error || response.statusText || 'Invalid credentials'}`;
                     messageElement.style.color = 'red';
                     userInfoDiv.style.display = 'none';
                     productSection.style.display = 'none';
-                    separator.style.display = 'none'; // Hide separator
+                    separator.style.display = 'none';
                 }
             } catch (error) {
                 console.error("Client-side login error:", error);
-                messageElement.textContent = 'An error occurred during login.';
+                messageElement.textContent = 'An error occurred during login (check console).';
                 messageElement.style.color = 'red';
                 userInfoDiv.style.display = 'none';
                 productSection.style.display = 'none';
-                separator.style.display = 'none'; // Hide separator
+                separator.style.display = 'none';
             }
         }
 
@@ -243,14 +283,14 @@
             const userInfoDiv = getElement('userInfo');
             const loginMessageElement = getElement('loginMessage');
             const authContainer = getElement('authContainer');
-            const toggleLink = getElement('toggleAuthLink');
+            // const toggleLink = getElement('toggleAuthLink'); // Link is inside container
             const productSection = getElement('productSection');
             const loginSection = getElement('loginSection');
             const registerSection = getElement('registerSection');
             const separator = getElement('sectionSeparator');
+            const pointMsg = getElement('pointMessage'); // Get point message element
 
-            if (!userInfoDiv || !authContainer || !toggleLink || !productSection || !loginSection || !registerSection || !separator) return; // Exit if critical elements missing
-
+            if (!userInfoDiv || !authContainer || !productSection || !loginSection || !registerSection || !separator) return;
 
             // Clear user info and messages
             getElement('userName').textContent = '';
@@ -258,21 +298,24 @@
             if (loginMessageElement) {
                 loginMessageElement.textContent = 'Logged out.';
                 loginMessageElement.style.color = 'black';
+                // Clear message after a delay
+                setTimeout(() => { if (loginMessageElement) loginMessageElement.textContent = ''; }, 3000);
             }
-            getElement('registerMessage').textContent = ''; // Also clear register message
+            getElement('registerMessage').textContent = '';
+            if (pointMsg) pointMsg.textContent = ''; // Clear point message on logout
 
 
-            // Hide user info and product section, show auth container and toggle link
+            // Hide user info and product section, show auth container
             userInfoDiv.style.display = 'none';
             productSection.style.display = 'none';
-            separator.style.display = 'none'; // Hide separator
+            separator.style.display = 'none';
             authContainer.style.display = 'block';
-            toggleLink.style.display = 'block';
+            // toggleLink.style.display = 'block'; // Link is inside container
 
             // Ensure login form is visible and registration is hidden on logout
             loginSection.style.display = 'block';
             registerSection.style.display = 'none';
-            toggleLink.textContent = 'Need to Register?'; // Reset toggle link text
+            getElement('toggleAuthLink').textContent = 'Need to Register?'; // Reset toggle link text
 
             // Clear product info on logout
             getElement("product-name").textContent = "";
@@ -283,20 +326,69 @@
             console.log("User logged out");
         }
 
+        // --- Add Point Handler ---
+        async function addPoint() {
+            const userNameElement = getElement('userName');
+            const userPointsElement = getElement('userPoints');
+            const pointMessageElement = getElement('pointMessage');
+
+            if (!userNameElement || !userPointsElement || !pointMessageElement) {
+                console.error("Required elements for adding points not found.");
+                return;
+            }
+
+            const currentUserName = userNameElement.textContent;
+            if (!currentUserName) {
+                pointMessageElement.textContent = 'Error: Could not identify user.';
+                pointMessageElement.style.color = 'red';
+                return;
+            }
+
+            pointMessageElement.textContent = 'Adding point...';
+            pointMessageElement.style.color = 'black';
+
+            try {
+                const response = await fetch('/add-point', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // SECURITY NOTE: Sending username like this is insecure. Use sessions/tokens in production.
+                    body: JSON.stringify({ name: currentUserName })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    pointMessageElement.textContent = `Point added! Total: ${result.newPoints}`;
+                    pointMessageElement.style.color = 'green';
+                    userPointsElement.textContent = result.newPoints; // Update points display
+                    // Clear message after a delay
+                    setTimeout(() => { if (pointMessageElement) pointMessageElement.textContent = ''; }, 3000);
+                } else {
+                    pointMessageElement.textContent = `Error: ${result.error || 'Could not add point.'}`;
+                    pointMessageElement.style.color = 'red';
+                }
+            } catch (error) {
+                console.error("Client-side add point error:", error);
+                pointMessageElement.textContent = 'An error occurred while adding point (check console).';
+                pointMessageElement.style.color = 'red';
+            }
+        }
+
         // --- Product Info Handler ---
-        async function fetchProductInfo() { // Renamed from myFunction to avoid potential conflicts
+        async function fetchProductInfo() {
             const barcodeInput = getElement("myText");
             const productNameEl = getElement("product-name");
             const energyEl = getElement("energy-efficiency");
             const picEl = getElement("pic");
 
-            if (!barcodeInput || !productNameEl || !energyEl || !picEl) return; // Exit if elements missing
+            if (!barcodeInput || !productNameEl || !energyEl || !picEl) return;
 
             let barcode = barcodeInput.value;
-            // Clear previous results
             productNameEl.textContent = "Loading...";
             energyEl.textContent = "";
             picEl.src = "";
+            picEl.alt = "Loading product image";
+
 
             try {
                 const response = await fetch('/get-product-info', {
@@ -304,24 +396,27 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ barcode: barcode })
                 });
+
+                const data = await response.json(); // Always try to parse JSON
+
                 if (response.ok) {
-                    const data = await response.json();
                     productNameEl.textContent = data.name || "N/A";
                     energyEl.textContent = data.energyEfficiency || "N/A";
                     picEl.src = data.pic || "";
-                    picEl.alt = data.name || "Product Image"; // Add alt text
+                    picEl.alt = data.name || "Product Image";
                 } else {
-                    const errorData = await response.json();
-                    console.error('Product info error:', response.status, errorData);
+                    console.error('Product info error:', response.status, data);
                     productNameEl.textContent = "Error";
-                    energyEl.textContent = errorData.error || 'Could not retrieve product info.';
-                    alert(`Error: ${errorData.error || 'Could not retrieve product info.'}`);
+                    energyEl.textContent = data.error || 'Could not retrieve product info.';
+                    picEl.alt = "Error loading image";
+                    // alert(`Error: ${data.error || 'Could not retrieve product info.'}`);
                 }
             } catch (error) {
                 console.error("Client-side error fetching product info:", error);
                 productNameEl.textContent = "Error";
-                energyEl.textContent = 'An error occurred while fetching data.';
-                alert('An error occurred while fetching data.');
+                energyEl.textContent = 'An error occurred while fetching data (check console).';
+                picEl.alt = "Error loading image";
+                // alert('An error occurred while fetching data.');
             }
         }
 
@@ -329,13 +424,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM fully loaded and parsed");
 
+            // Get elements
             const registerForm = getElement('registerForm');
             const loginForm = getElement('loginForm');
             const logoutButton = getElement('logoutButton');
             const toggleLink = getElement('toggleAuthLink');
-            const getInfoBtn = getElement('getInfoButton'); // Get product info button
+            const getInfoBtn = getElement('getInfoButton');
+            const addPointBtn = getElement('addPointButton');
 
-
+            // Attach listeners
             if (registerForm) {
                 registerForm.addEventListener('submit', handleRegister);
                 console.log("Register form listener attached.");
@@ -350,15 +447,18 @@
             }
             if (toggleLink) {
                 toggleLink.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent link default action
+                    e.preventDefault(); // Prevent link default action if it's an <a>
                     toggleAuthForms();
                 });
                 console.log("Toggle link listener attached.");
             }
             if (getInfoBtn) {
-                // Attach listener to the new button ID
                 getInfoBtn.addEventListener('click', fetchProductInfo);
                 console.log("Get Info button listener attached.");
+            }
+            if (addPointBtn) {
+                addPointBtn.addEventListener('click', addPoint);
+                console.log("Add Point button listener attached.");
             }
 
             // Set initial state explicitly
@@ -367,14 +467,13 @@
             const userInfo = getElement('userInfo');
             const separator = getElement('sectionSeparator');
 
-
-            if (authContainer) authContainer.style.display = 'block'; // Show auth section initially
-            if (getElement('loginSection')) getElement('loginSection').style.display = 'block'; // Show login form initially
-            if (getElement('registerSection')) getElement('registerSection').style.display = 'none'; // Hide register form initially
-            if (productSection) productSection.style.display = 'none'; // Hide product section initially
-            if (userInfo) userInfo.style.display = 'none'; // Hide user info initially
-            if (separator) separator.style.display = 'none'; // Hide separator initially
-            if (toggleLink) toggleLink.style.display = 'block'; // Show toggle link initially
+            if (authContainer) authContainer.style.display = 'block';
+            if (getElement('loginSection')) getElement('loginSection').style.display = 'block';
+            if (getElement('registerSection')) getElement('registerSection').style.display = 'none';
+            if (productSection) productSection.style.display = 'none';
+            if (userInfo) userInfo.style.display = 'none';
+            if (separator) separator.style.display = 'none';
+            // Toggle link visibility is handled by authContainer visibility
 
             console.log("Initial state set.");
         });
