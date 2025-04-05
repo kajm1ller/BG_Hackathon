@@ -20,38 +20,39 @@
         <img src="" id="pic" width="200px" height="400px" />
 
     </div>
-    
+
 
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/scanbot-web-sdk@7.1.0/bundle/ScanbotSDK.ui2.min.js"></script>
 <script src="./barcode.js"></script>
+<script src="./script.js"></script>
 <script>
-        async function myFunction() {
-            let barcode = document.getElementById("myText").value;
+    async function myFunction() {
+        let barcode = document.getElementById("myText").value;
 
-            try {
-                const response = await fetch('/get-product-info', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ barcode: barcode })
-                });
+        try {
+            const response = await fetch('/get-product-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ barcode: barcode })
+            });
 
-                if (response.status === 200) {
-                    const data = await response.json();
-                    document.getElementById("product-name").textContent = data.name;
-                    document.getElementById("energy-efficiency").textContent = data.energyEfficiency;
-                    document.getElementById("pic").src = data.pic;
-                } else {
-                    alert('Error: Could not retrieve product info.');
-                }
-            } catch (error) {
-                console.error("Client-side error:", error);
-                alert('An error occurred while fetching data.');
+            if (response.status === 200) {
+                const data = await response.json();
+                document.getElementById("product-name").textContent = data.name;
+                document.getElementById("energy-efficiency").textContent = data.energyEfficiency;
+                document.getElementById("pic").src = data.pic;
+            } else {
+                alert('Error: Could not retrieve product info.');
             }
+        } catch (error) {
+            console.error("Client-side error:", error);
+            alert('An error occurred while fetching data.');
         }
+    }
 </script>
 
 </html>

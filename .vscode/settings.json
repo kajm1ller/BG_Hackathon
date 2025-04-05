@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/8f3256a7-daaf-4a43-9537-2e0889a715a7/resourceGroups/Poop-Group/providers/Microsoft.Web/sites/New-Web-App",
+    "appService.deploySubpath": "./"
+}
