@@ -61,6 +61,7 @@ async function showResult(res) {
         if (response.status === 200) {
             const data = await response.json();
             p_text.textContent = data.name;
+			document.getElementById("pic").src = data.pic;
         } else {
             alert("Error: Could not retrieve product info.");
         }
@@ -70,28 +71,4 @@ async function showResult(res) {
     }
     const result_div = document.getElementById("centerArea");
     result_div.appendChild(p_text);
-}
-
-async function myFunction() {
-    let barcode = document.getElementById("myText").value;
-
-    try {
-        const response = await fetch("/get-product-info", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ barcode: barcode }),
-        });
-
-        if (response.status === 200) {
-            const data = await response.json();
-            document.getElementById("product-name").textContent = data.name;
-        } else {
-            alert("Error: Could not retrieve product info.");
-        }
-    } catch (error) {
-        console.error("Client-side error:", error);
-        alert("An error occurred while fetching data.");
-    }
 }
