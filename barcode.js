@@ -49,26 +49,23 @@ async function showResult(res) {
 
     let barcode = result.text;
 
-    try {
-        const response = await fetch("/get-product-info", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ barcode: barcode }),
-        });
-
-        if (response.status === 200) {
-            const data = await response.json();
-            p_text.textContent = data.name;
-			document.getElementById("pic").src = data.pic;
-        } else {
-            alert("Error: Could not retrieve product info.");
-        }
-    } catch (error) {
-        console.error("Client-side error:", error);
-        alert("An error occurred while fetching data.");
+	switch (barcode) {
+        case "070847811169":
+            title = "Monster Energy Drink Original 16 Oz";
+			info = `The Monster Rehab Energy Drink comes in aluminum cans, which are highly recyclable. 
+			Aluminum can be recycled infinitely without significant loss of quality and is accepted in virtually all recycling programs. 
+			Recycling aluminum saves a significant amount of energy compared to producing new aluminum. While the can has a coating and a 
+			printed label, these are typically handled during the aluminum recycling process where the cans are shredded and melted at 
+			high temperatures.ecyclability Score: 5`
+            break;
+        default:
+            title = "";
     }
+
+    p_text.textContent = `${title} \n ${info}`;
     const result_div = document.getElementById("centerArea");
     result_div.appendChild(p_text);
 }
+
+
+
