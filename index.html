@@ -6,6 +6,7 @@
     <title>Trashcels Seething</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/scanbot-web-sdk@7.1.0/bundle/ScanbotSDK.ui2.min.js"></script>
     <style>
         /* Basic styling for layout - Move detailed styles to style.css */
         body {
@@ -272,7 +273,8 @@
             <img id="recycle-logo"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Recycle001.svg/1024px-Recycle001.svg.png"
                 alt="Recycling Logo">
-            <a id="recycle-button">Go Recycle!</a>
+            <button id="recycle-button">Go Recycle!</button>
+
         </div>
 
         <div id="leaderboardArea">
@@ -280,8 +282,12 @@
             <ol id="leaderboard-list">
                 <li>Loading...</li>
             </ol>
+
         </div>
     </div>
+
+
+
     <script src="barcode.js"></script>
     <script src="main.js"></script>
 
