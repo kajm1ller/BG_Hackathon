@@ -42,11 +42,56 @@ async function openScanner() {
     scanner = await scanbotSDK.createBarcodeScanner(configuration);
 }
 
-function showResult(res) {
+async function showResult(res) {
     const result = res.barcodes[0];
     const p_text = document.createElement("p");
     console.log(`barcode: ${result.format} -> ${result.text}`);
-    p_text.textContent = `barcode: ${result.format} -> ${result.text}`;
+
+    let barcode = result.text;
+
+    try {
+        const response = await fetch("/get-product-info", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ barcode: barcode }),
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
+            p_text.textContent = data.name;
+        } else {
+            alert("Error: Could not retrieve product info.");
+        }
+    } catch (error) {
+        console.error("Client-side error:", error);
+        alert("An error occurred while fetching data.");
+    }
     const result_div = document.getElementById("centerArea");
     result_div.appendChild(p_text);
+}
+
+async function myFunction() {
+    let barcode = document.getElementById("myText").value;
+
+    try {
+        const response = await fetch("/get-product-info", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ barcode: barcode }),
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
+            document.getElementById("product-name").textContent = data.name;
+        } else {
+            alert("Error: Could not retrieve product info.");
+        }
+    } catch (error) {
+        console.error("Client-side error:", error);
+        alert("An error occurred while fetching data.");
+    }
 }
