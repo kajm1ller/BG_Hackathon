@@ -1,4 +1,10 @@
 {
+  "name": "moon_laborers",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node script.js"
+  },
   "type": "module",
   "dependencies": {
     "bcrypt": "^5.1.1",

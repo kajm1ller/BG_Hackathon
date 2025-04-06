@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Trashcels Seething</title>
+    <title>Recycling Rewards</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -81,135 +81,239 @@
         }
 
 
-        /* New Logged-in View Container */
+        /* Updated Logged-in View Container Layout */
         #loggedInView {
             display: grid;
-            grid-template-columns: 1fr 1.5fr 1fr;
-            /* Adjust column ratios as needed */
+            grid-template-columns: 250px 1fr 280px;
+            /* Profile | Center | Right Column */
             grid-template-rows: auto 1fr;
+            /* Top row auto height, bottom row takes remaining space */
+            /* Define grid areas - rewards area below leaderboard */
             grid-template-areas:
                 "profile center leaderboard"
-                "map     center leaderboard";
+                "map     center rewards";
+            /* Map below profile, Rewards below leaderboard */
             height: 100vh;
-            padding: 20px;
-            gap: 20px;
+            padding: 25px;
+            gap: 25px;
             box-sizing: border-box;
+        }
+
+        /* Area Styling & Assignment */
+        #profileArea,
+        #mapArea,
+        #centerArea,
+        #leaderboardArea,
+        #rewardsArea {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            /* Consistent padding */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* Hide overflow by default, enable scrolling below */
         }
 
         #profileArea {
             grid-area: profile;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            border-radius: 8px;
             text-align: center;
+            align-items: center;
         }
 
         #mapArea {
             grid-area: map;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 5px;
-            border-radius: 8px;
+            padding: 0;
         }
 
+        /* Remove padding for iframe */
         #centerArea {
             grid-area: center;
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
         #leaderboardArea {
             grid-area: leaderboard;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            border-radius: 8px;
+            overflow-y: auto;
         }
+
+        /* Allow scrolling */
+        #rewardsArea {
+            grid-area: rewards;
+            overflow-y: auto;
+        }
+
+        /* Allow scrolling */
+
 
         /* Specific element styling */
-        #profileArea img {
-            max-width: 100px;
-            height: auto;
+        #profileArea img#user-avatar {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            margin-bottom: 10px;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 15px;
+            object-fit: cover;
         }
 
-        #profileArea h3,
+        #profileArea h3 {
+            margin: 10px 0 5px 0;
+            font-size: 1.4em;
+            color: #0056b3;
+        }
+
         #profileArea p {
-            margin: 5px 0;
+            margin: 5px 0 15px 0;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        #logoutButton {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+
+        #logoutButton:hover {
+            background-color: #c82333;
         }
 
         #mapArea iframe {
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
-        #recycle-logo {
-            width: 150px;
-            /* Adjust size */
+        #centerArea #recycle-logo {
+            width: clamp(150px, 25vw, 250px);
             height: auto;
-            margin-bottom: 20px;
-            transition: transform 0.5s ease-in-out;
-            /* Smooth transition for spinning */
+            margin-bottom: 30px;
+            transition: transform 1s linear;
         }
 
-        #recycle-button {
+        #centerArea .spin-logo {
+            transform: rotate(360deg);
+        }
+
+        #centerArea #recycle-button {
             display: inline-block;
-            /* Allow padding */
-            padding: 12px 25px;
-            background-color: #4CAF50;
-            /* Green background */
+            padding: 15px 30px;
+            background-color: #28a745;
             color: white;
             text-decoration: none;
-            /* Remove underline from link */
-            border: 2px solid black;
-            /* Black border */
-            border-radius: 5px;
-            font-size: 1.1em;
+            border: 3px solid black;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
-        #recycle-button:hover {
-            background-color: #45a049;
+        #centerArea #recycle-button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
         }
 
-        #leaderboardArea h2 {
+        #centerArea #recycle-button:active {
+            transform: scale(1);
+        }
+
+        #leaderboardArea h2,
+        #rewardsArea h2 {
             text-align: center;
             margin-top: 0;
             margin-bottom: 15px;
+            color: #0056b3;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            flex-shrink: 0;
         }
 
         #leaderboard-list {
-            list-style: none;
+            list-style: decimal inside;
             padding: 0;
             margin: 0;
         }
 
         #leaderboard-list li {
-            background-color: white;
-            border: 1px solid black;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-            border-radius: 4px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
             font-weight: bold;
+            font-size: 1em;
+            display: flex;
+            justify-content: space-between;
         }
 
-        #logoutButton {
-            /* Style logout to fit better */
-            margin-top: 15px;
-            padding: 8px 15px;
-            cursor: pointer;
-            background-color: #dc3545;
+        #leaderboard-list li::marker {
+            font-weight: bold;
+            color: #0056b3;
+            margin-right: 10px;
+        }
+
+        /* Rewards Section Styling */
+        #rewards-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reward-item {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reward-item span {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .redeem-button {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            background-color: #17a2b8;
             color: white;
             border: none;
             border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            white-space: nowrap;
         }
 
-        #logoutButton:hover {
-            background-color: #c82333;
+        .redeem-button:hover {
+            background-color: #138496;
+        }
+
+        .redeem-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #redeemMessage {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 1.2em;
+            font-size: 0.9em;
         }
     </style>
 </head>
@@ -217,34 +321,23 @@
 <body>
 
     <div id="authContainer">
-        <h1>Trashcels Seething</h1>
+        <h1>Recycling Rewards</h1>
         <div id="loginSection">
             <h2>Login</h2>
             <form id="loginForm">
-                <div>
-                    <label for="loginName">Name:</label>
-                    <input type="text" id="loginName" name="name" required>
-                </div>
-                <div>
-                    <label for="loginPassword">Password:</label>
-                    <input type="password" id="loginPassword" name="password" required>
-                </div>
+                <div><label for="loginName">Name:</label><input type="text" id="loginName" name="name" required></div>
+                <div><label for="loginPassword">Password:</label><input type="password" id="loginPassword"
+                        name="password" required></div>
                 <button type="submit">Login</button>
             </form>
             <p id="loginMessage"></p>
         </div>
-
         <div id="registerSection" class="hidden">
             <h2>Register</h2>
             <form id="registerForm">
-                <div>
-                    <label for="regName">Name:</label>
-                    <input type="text" id="regName" name="name" required>
-                </div>
-                <div>
-                    <label for="regPassword">Password:</label>
-                    <input type="password" id="regPassword" name="password" required>
-                </div>
+                <div><label for="regName">Name:</label><input type="text" id="regName" name="name" required></div>
+                <div><label for="regPassword">Password:</label><input type="password" id="regPassword" name="password"
+                        required></div>
                 <button type="submit">Register</button>
             </form>
             <p id="registerMessage"></p>
@@ -281,12 +374,30 @@
                 <li>Loading...</li>
             </ol>
         </div>
+
+        <div id="rewardsArea">
+            <h2>Rewards</h2>
+            <ul id="rewards-list">
+                <li class="reward-item">
+                    <span>Campus Coffee Coupon (100 Pts)</span>
+                    <button class="redeem-button" data-cost="100" data-reward="Coffee Coupon">Redeem</button>
+                </li>
+                <li class="reward-item">
+                    <span>Reusable Water Bottle (500 Pts)</span>
+                    <button class="redeem-button" data-cost="500" data-reward="Water Bottle">Redeem</button>
+                </li>
+                <li class="reward-item">
+                    <span>BGSU T-Shirt (1000 Pts)</span>
+                    <button class="redeem-button" data-cost="1000" data-reward="T-Shirt">Redeem</button>
+                </li>
+            </ul>
+            <p id="redeemMessage"></p>
+        </div>
+
     </div>
     <script>
-
-        function getElement(id) {
-            return document.getElementById(id);
-        }
+        // --- Helper Function ---
+        function getElement(id) { return document.getElementById(id); }
 
         // --- Toggle Auth Forms ---
         function toggleAuthForms() {
@@ -295,7 +406,6 @@
             const link = getElement('toggleAuthLink');
             const loginMsg = getElement('loginMessage');
             const registerMsg = getElement('registerMessage');
-
             if (getElement('loginSection').classList.contains('hidden')) {
                 link.textContent = 'Already have an account? Login.';
                 if (loginMsg) loginMsg.textContent = '';
@@ -305,7 +415,7 @@
             }
         }
 
-        // --- Registration Handler (Fixed duplicate response) ---
+        // --- Registration Handler ---
         async function handleRegister(event) {
             event.preventDefault();
             const form = event.target;
@@ -315,38 +425,16 @@
             if (!messageElement) return;
             messageElement.textContent = 'Registering...';
             messageElement.style.color = 'black';
-
-            if (password.length < 4) {
-                messageElement.textContent = 'Password must be at least 4 characters long';
-                messageElement.style.color = 'red';
-                return;
-            }
-
+            if (password.length < 4) { messageElement.textContent = 'Password must be at least 4 characters long'; messageElement.style.color = 'red'; return; }
             try {
-                // Use relative path for API call
-                const response = await fetch('/register', { // Use relative path
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, password: password })
-                });
+                const response = await fetch('/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, password: password }) });
                 const result = await response.json();
-                if (response.ok) {
-                    messageElement.textContent = 'Registration successful! Please login.';
-                    messageElement.style.color = 'green';
-                    form.reset();
-                    toggleAuthForms(); // Switch to login form
-                } else {
-                    messageElement.textContent = `Registration failed: ${result.error || response.statusText || 'Unknown server error'}`;
-                    messageElement.style.color = 'red';
-                }
-            } catch (error) {
-                console.error("Client-side registration error:", error);
-                messageElement.textContent = 'An error occurred (check console).';
-                messageElement.style.color = 'red';
-            }
+                if (response.ok) { messageElement.textContent = 'Registration successful! Please login.'; messageElement.style.color = 'green'; form.reset(); toggleAuthForms(); }
+                else { messageElement.textContent = `Registration failed: ${result.error || response.statusText || 'Unknown server error'}`; messageElement.style.color = 'red'; }
+            } catch (error) { console.error("Client-side registration error:", error); messageElement.textContent = 'An error occurred (check console).'; messageElement.style.color = 'red'; }
         }
 
-        // --- Login Handler (Reverted API path) ---
+        // --- Login Handler ---
         async function handleLogin(event) {
             event.preventDefault();
             const form = event.target;
@@ -355,145 +443,104 @@
             const messageElement = getElement('loginMessage');
             const authContainer = getElement('authContainer');
             const loggedInView = getElement('loggedInView');
-
             if (!messageElement || !authContainer || !loggedInView) return;
-            messageElement.textContent = 'Logging in...';
-            messageElement.style.color = 'black';
-
+            messageElement.textContent = 'Logging in...'; messageElement.style.color = 'black';
             try {
-                // Use relative path for API call
-                const response = await fetch('/login', { // Use relative path
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, password: password })
-                });
+                const response = await fetch('/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, password: password }) });
                 const result = await response.json();
-
-                if (response.ok) { // Status 200-299
-                    authContainer.classList.add('hidden'); // Hide login form
-                    loggedInView.classList.remove('hidden'); // Show dashboard
-
-                    // Populate user info
+                if (response.ok) {
+                    authContainer.classList.add('hidden'); loggedInView.classList.remove('hidden');
                     getElement('user-name-display').textContent = result.name || 'User';
                     getElement('user-points-display').textContent = result.points !== undefined ? result.points : '0';
-
-                    // Fetch leaderboard
-                    await fetchLeaderboard();
-
-                    form.reset();
-                    messageElement.textContent = ''; // Clear login message
-                } else {
-                    messageElement.textContent = `Login failed: ${result.error || response.statusText || 'Invalid credentials'}`;
-                    messageElement.style.color = 'red';
-                    loggedInView.classList.add('hidden'); // Ensure dashboard is hidden
-                }
-            } catch (error) {
-                console.error("Client-side login error:", error);
-                messageElement.textContent = 'An error occurred during login (check console).';
-                messageElement.style.color = 'red';
-                loggedInView.classList.add('hidden');
-            }
+                    await fetchLeaderboard(); // Fetch leaderboard on successful login
+                    form.reset(); messageElement.textContent = '';
+                } else { messageElement.textContent = `Login failed: ${result.error || response.statusText || 'Invalid credentials'}`; messageElement.style.color = 'red'; loggedInView.classList.add('hidden'); }
+            } catch (error) { console.error("Client-side login error:", error); messageElement.textContent = 'An error occurred during login (check console).'; messageElement.style.color = 'red'; loggedInView.classList.add('hidden'); }
         }
 
-        // --- Logout Handler (Modified) ---
+        // --- Logout Handler ---
         function handleLogout() {
             const authContainer = getElement('authContainer');
             const loggedInView = getElement('loggedInView');
             const loginMessageElement = getElement('loginMessage');
-
             if (!authContainer || !loggedInView) return;
-
-            // Hide dashboard, show auth container
-            loggedInView.classList.add('hidden');
-            authContainer.classList.remove('hidden');
-
-            // Reset forms and messages
-            getElement('loginForm').reset();
-            getElement('registerForm').reset();
-            if (loginMessageElement) {
-                loginMessageElement.textContent = 'Logged out.';
-                loginMessageElement.style.color = 'black';
-                setTimeout(() => { if (loginMessageElement) loginMessageElement.textContent = ''; }, 3000);
-            }
+            loggedInView.classList.add('hidden'); authContainer.classList.remove('hidden');
+            getElement('loginForm').reset(); getElement('registerForm').reset();
+            if (loginMessageElement) { loginMessageElement.textContent = 'Logged out.'; loginMessageElement.style.color = 'black'; setTimeout(() => { if (loginMessageElement) loginMessageElement.textContent = ''; }, 3000); }
             getElement('registerMessage').textContent = '';
-
-            // Ensure login form is visible and registration is hidden on logout
-            if (getElement('registerSection').classList.contains('hidden') == false) {
-                toggleAuthForms(); // If register was visible, toggle back to login
-            }
-
+            if (getElement('registerSection').classList.contains('hidden') == false) { toggleAuthForms(); }
             console.log("User logged out");
         }
 
-        // --- Leaderboard Fetching (Reverted API path) ---
+        // --- Leaderboard Fetching ---
         async function fetchLeaderboard() {
             const listElement = getElement('leaderboard-list');
             if (!listElement) return;
-            listElement.innerHTML = '<li>Loading...</li>'; // Clear previous entries
-
+            listElement.innerHTML = '<li>Loading...</li>';
             try {
-                // Use relative path for API call
-                const response = await fetch('/leaderboard'); // Use relative path
-                if (!response.ok) {
-                    // Throw error with status text to be caught below
-                    const errorText = await response.text(); // Get error text from server if available
-                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText} - ${errorText}`);
-                }
+                const response = await fetch('/leaderboard');
+                if (!response.ok) { const errorText = await response.text(); throw new Error(`HTTP error! status: ${response.status} - ${response.statusText} - ${errorText}`); }
                 const leaders = await response.json();
-
-                listElement.innerHTML = ''; // Clear loading message
+                listElement.innerHTML = '';
                 if (leaders && leaders.length > 0) {
-                    leaders.forEach(leader => {
-                        const li = document.createElement('li');
-                        // Display name and points separately for potential styling
-                        li.innerHTML = `<span>${leader.name}</span><span>${leader.points} Pts</span>`;
-                        listElement.appendChild(li);
-                    });
-                } else {
-                    listElement.innerHTML = '<li>Leaderboard is empty.</li>';
-                }
-            } catch (error) {
-                console.error("Error fetching leaderboard:", error);
-                listElement.innerHTML = `<li>Error loading leaderboard. ${error.message ? `(${error.message})` : ''}</li>`;
-            }
+                    leaders.forEach(leader => { const li = document.createElement('li'); li.innerHTML = `<span>${leader.name}</span><span>${leader.points} Pts</span>`; listElement.appendChild(li); });
+                } else { listElement.innerHTML = '<li>Leaderboard is empty.</li>'; }
+            } catch (error) { console.error("Error fetching leaderboard:", error); listElement.innerHTML = `<li>Error loading leaderboard. ${error.message ? `(${error.message})` : ''}</li>`; }
         }
 
+        // --- Handle Redeem Button Click ---
+        function handleRedeemClick(event) {
+            const button = event.target;
+            const cost = parseInt(button.getAttribute('data-cost'), 10);
+            const rewardName = button.getAttribute('data-reward');
+            const userPointsElement = getElement('user-points-display');
+            const messageElement = getElement('redeemMessage');
+            let currentPoints = 0;
+            messageElement.textContent = ''; // Clear previous message
+            if (userPointsElement) { currentPoints = parseInt(userPointsElement.textContent, 10) || 0; }
+            console.log(`Attempting to redeem ${rewardName} for ${cost} points. User has ${currentPoints} points.`);
+            if (currentPoints >= cost) {
+                // TODO: Add backend call here
+                console.log(`Redeemed ${rewardName}!`);
+                messageElement.textContent = `Successfully redeemed ${rewardName}!`; messageElement.style.color = 'green';
+                // Simulate point deduction on frontend (REMOVE THIS when backend is implemented)
+                const newPoints = currentPoints - cost;
+                if (userPointsElement) userPointsElement.textContent = newPoints;
+                // button.disabled = true; button.textContent = 'Redeemed';
+            } else {
+                console.log(`Not enough points to redeem ${rewardName}.`);
+                messageElement.textContent = `Not enough points for ${rewardName}.`; messageElement.style.color = 'red';
+            }
+            setTimeout(() => { messageElement.textContent = ''; }, 4000); // Clear message
+        }
 
         // --- Event Listeners Setup ---
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM fully loaded");
-
+            // Existing listeners...
             const registerForm = getElement('registerForm');
             const loginForm = getElement('loginForm');
             const logoutButton = getElement('logoutButton');
             const toggleLink = getElement('toggleAuthLink');
             const recycleButton = getElement('recycle-button');
-            const recycleLogo = getElement('recycle-logo'); // Get logo element
-
+            const recycleLogo = getElement('recycle-logo');
             if (registerForm) registerForm.addEventListener('submit', handleRegister);
             if (loginForm) loginForm.addEventListener('submit', handleLogin);
             if (logoutButton) logoutButton.addEventListener('click', handleLogout);
             if (toggleLink) toggleLink.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(); });
-
-            // --- ADDED Hover Listeners for Recycle Button ---
             if (recycleButton && recycleLogo) {
-                recycleButton.addEventListener('mouseenter', () => {
-                    recycleLogo.classList.add('spin-logo'); // Add class on hover over button
-                });
-                recycleButton.addEventListener('mouseleave', () => {
-                    recycleLogo.classList.remove('spin-logo'); // Remove class when mouse leaves button
-                });
+                recycleButton.addEventListener('mouseenter', () => { recycleLogo.classList.add('spin-logo'); });
+                recycleButton.addEventListener('mouseleave', () => { recycleLogo.classList.remove('spin-logo'); });
                 console.log("Recycle button hover listeners attached.");
             }
-
-
-            // Initial state: Ensure loggedInView is hidden
+            // --- ADDED Listeners for Redeem Buttons ---
+            const redeemButtons = document.querySelectorAll('.redeem-button');
+            redeemButtons.forEach(button => { button.addEventListener('click', handleRedeemClick); });
+            console.log(`Attached listeners to ${redeemButtons.length} redeem buttons.`);
+            // Initial state...
             getElement('loggedInView').classList.add('hidden');
             getElement('authContainer').classList.remove('hidden');
-            // Ensure register section starts hidden
             getElement('registerSection').classList.add('hidden');
-
-
             console.log("Initial state set, listeners attached.");
         });
     </script>
