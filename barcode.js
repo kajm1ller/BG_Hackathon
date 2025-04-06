@@ -1,9 +1,6 @@
-import ScanbotSDK from "scanbot-web-sdk/ui";
-import { UIConfig } from "scanbot-web-sdk/@types";
+var button = document.getElementById('recycle-button')
+button.addEventListener('click', openScanner)
 
-export default function startScanner(config: UIConfig.BarcodeScannerScreenConfiguration) {
-	// TODO: Configure as needed
-	const result = ScanbotSDK.UI.createBarcodeScanner(config);
-	// TODO: Process & present the result as needed
-	return result;
+async function openScanner() {
+
 }
