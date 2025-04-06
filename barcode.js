@@ -44,28 +44,28 @@ async function openScanner() {
 
 async function showResult(res) {
     const result = res.barcodes[0];
-    const p_text = document.createElement("p");
     console.log(`barcode: ${result.format} -> ${result.text}`);
 
     let barcode = result.text;
 
-	switch (barcode) {
+    switch (barcode) {
         case "070847811169":
-            title = "Monster Energy Drink Original 16 Oz";
-			info = `The Monster Rehab Energy Drink comes in aluminum cans, which are highly recyclable. 
+            newHtml = `
+            <h1>Monster Energy Drink Original 16 Oz<h1><br><br>
+            <p>The Monster Rehab Energy Drink comes in aluminum cans, which are highly recyclable. 
 			Aluminum can be recycled infinitely without significant loss of quality and is accepted in virtually all recycling programs. 
 			Recycling aluminum saves a significant amount of energy compared to producing new aluminum. While the can has a coating and a 
 			printed label, these are typically handled during the aluminum recycling process where the cans are shredded and melted at 
-			high temperatures.ecyclability Score: 5`
+			high temperatures.<p><br><br>
+            
+            <h1>Recyclability Score: 5<h1>`;
             break;
         default:
             title = "";
     }
 
-    p_text.textContent = `${title} \n ${info}`;
     const result_div = document.getElementById("centerArea");
-    result_div.appendChild(p_text);
+    result_div.innerHTML = newHtml;
+    result_div.style.paddingLeft = "300px";
+    result_div.style.paddingRight = "300px";
 }
-
-
-
