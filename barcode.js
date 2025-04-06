@@ -59,7 +59,17 @@ async function showResult(res) {
 			high temperatures.<p><br><br>
             
             <h1>Recyclability Score: 5<h1>`;
-            break;
+        break;
+        case "079581184027":
+            newHtml = `
+            <h1>Calypso Strawberry Lemonade 16 Oz<h1><br><br>
+            <p>The Calypso Lemonade is packaged in a glass bottle. 1  Glass is highly recyclable and can be recycled endlessly without losing quality. 2  
+            It is generally accepted in most municipal recycling programs. However, it's important to ensure the bottle is empty and rinsed before recycling. 
+            The cap is likely metal, which is also recyclable. The label might need to be considered by some advanced recycling facilities, 
+            but generally, glass bottles are a desirable material for recycling.<p><br><br>
+            
+            <h1>Recyclability Score: 5<h1>`;
+        break;
         default:
             title = "";
     }
