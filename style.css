@@ -96,8 +96,9 @@ body {
 /* Updated Logged-in View Container Layout */
 #loggedInView {
     display: grid;
-    grid-template-columns: 250px 1fr 280px;
-    /* Profile | Center | Right Column */
+    /* Increase the first column width for the map */
+    grid-template-columns: 350px 1fr 280px;
+    /* Changed 250px to 350px */
     /* Define 3 rows: Auto for top, 1fr for middle (map takes priority), Auto for bottom (rewards) */
     grid-template-rows: auto 1fr auto;
     /* Define grid areas */
@@ -144,6 +145,9 @@ body {
     /* Span rows 2 and 3 */
     padding: 0;
     /* Remove padding for iframe */
+    /* Add flex display to allow text positioning below iframe */
+    display: flex;
+    flex-direction: column;
 }
 
 #centerArea {
@@ -218,10 +222,32 @@ body {
 
 #mapArea iframe {
     width: 100%;
-    height: 100%;
+    /* Let the iframe take available width */
+    flex-grow: 1;
+    /* Allow iframe to take up vertical space */
     border: none;
-    border-radius: 10px;
+    border-radius: 10px 10px 0 0;
+    /* Adjust radius if text is directly below */
 }
+
+/* Style for the text below the map */
+#map-info-text {
+    margin: 0;
+    /* Remove default margin */
+    padding: 10px 15px;
+    /* Match other area padding */
+    font-size: 0.9em;
+    text-align: center;
+    color: #555;
+    /* Optional: Adjust text color */
+    background: rgba(255, 255, 255, 0.8);
+    /* Match area background */
+    border-radius: 0 0 10px 10px;
+    /* Round bottom corners */
+    flex-shrink: 0;
+    /* Prevent text from shrinking */
+}
+
 
 /* Center Area Content - Allow shrinking if needed */
 #centerArea #recycle-logo {
@@ -272,6 +298,34 @@ body {
     padding-bottom: 10px;
     flex-shrink: 0;
 }
+
+/* Styles for the new leaderboard toggle buttons */
+.leaderboard-toggle-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    /* Space below buttons */
+    gap: 10px;
+    /* Space between buttons */
+    flex-shrink: 0;
+    /* Prevent buttons from shrinking */
+}
+
+.leaderboard-toggle-buttons button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #0056b3;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.leaderboard-toggle-buttons button.active {
+    background-color: #0056b3;
+    color: white;
+    font-weight: bold;
+}
+
 
 #leaderboard-list {
     list-style: decimal inside;

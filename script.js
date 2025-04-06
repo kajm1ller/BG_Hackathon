@@ -153,7 +153,7 @@ app.post("/login", (req, res) => {
     });
 });
 
-// Add Point Route - *** Corrected: Was mistakenly duplicated as /register before ***
+// Add Point Route
 app.post("/add-point", (req, res) => {
     console.log("Received request for /add-point");
     const { name } = req.body;
@@ -184,22 +184,68 @@ app.post("/add-point", (req, res) => {
 });
 
 
-// Leaderboard Route
-app.get("/leaderboard", (req, res) => {
-    console.log("==== Received request for /leaderboard ====");
-    if (!db) { console.error("-> DB not initialized for leaderboard"); return res.status(500).json({ error: "Database connection not ready" }); } // Check if DB exists
+// Leaderboard Route - UPDATED to handle specific types
+// Handles requests like GET /leaderboard/user
+app.get("/leaderboard/user", (req, res) => {
+    console.log("==== Received request for /leaderboard/user ====");
+    if (!db) { console.error("-> DB not initialized for leaderboard"); return res.status(500).json({ error: "Database connection not ready" }); }
 
+    // This query fetches top users. Adjust if needed.
     const sql = `SELECT name, points FROM users ORDER BY points DESC LIMIT 5`;
-    console.log("-> Executing SQL for leaderboard");
-    db.all(sql, [], (err, rows) => { // SQLite uses [] for params if none
+    console.log("-> Executing SQL for user leaderboard");
+    db.all(sql, [], (err, rows) => {
         if (err) {
-            console.error("-> Database error fetching leaderboard:", err.message);
-            return res.status(500).json({ error: "Database error fetching leaderboard" });
+            console.error("-> Database error fetching user leaderboard:", err.message);
+            return res.status(500).json({ error: "Database error fetching user leaderboard" });
         }
-        console.log(`-> Leaderboard query successful, found ${rows ? rows.length : 0} users.`);
+        console.log(`-> User leaderboard query successful, found ${rows ? rows.length : 0} users.`);
         res.status(200).json(rows);
     });
 });
+
+// Handles requests like GET /leaderboard/dorm
+// Placeholder - you'll need to implement actual dorm logic and database schema
+app.get("/leaderboard/dorm", (req, res) => {
+    console.log("==== Received request for /leaderboard/dorm ====");
+    // --- TODO: Implement dorm leaderboard logic ---
+    // This might involve:
+    // 1. A different table structure (e.g., linking users to dorms)
+    // 2. A different SQL query (e.g., grouping points by dorm)
+
+    console.warn("-> Dorm leaderboard endpoint is a placeholder.");
+    // Sending back dummy data for now
+    const dummyDormData = [
+        { name: "Founders Hall", points: 1500 },
+        { name: "Kreischer Quad", points: 1250 },
+        { name: "Offenhauer Towers", points: 1100 },
+        { name: "Centennial Hall", points: 950 },
+        { name: "McDonald Hall", points: 800 }
+    ];
+    res.status(200).json(dummyDormData);
+
+    /* --- Example of how you might query if you had a 'dorm' column in users table ---
+    if (!db) { console.error("-> DB not initialized for dorm leaderboard"); return res.status(500).json({ error: "Database connection not ready" }); }
+
+    const sql = `SELECT dorm, SUM(points) as total_points
+                 FROM users
+                 WHERE dorm IS NOT NULL AND dorm != ''
+                 GROUP BY dorm
+                 ORDER BY total_points DESC
+                 LIMIT 5`; // Example query
+    console.log("-> Executing SQL for dorm leaderboard");
+    db.all(sql, [], (err, rows) => {
+        if (err) {
+            console.error("-> Database error fetching dorm leaderboard:", err.message);
+            return res.status(500).json({ error: "Database error fetching dorm leaderboard" });
+        }
+        // Rename 'total_points' to 'points' and 'dorm' to 'name' for consistency with frontend if needed
+        const formattedRows = rows.map(row => ({ name: row.dorm, points: row.total_points }));
+        console.log(`-> Dorm leaderboard query successful, found ${formattedRows ? formattedRows.length : 0} dorms.`);
+        res.status(200).json(formattedRows);
+    });
+    */
+});
+
 
 console.log("Route handlers defined.");
 
