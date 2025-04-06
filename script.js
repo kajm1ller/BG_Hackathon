@@ -131,31 +131,26 @@ app.post("/login", (req, res) => {
 });
 
 // Add Point Route (Keep existing code)
-app.post("/add-point", (req, res) => {
-    console.log("Received request for /add-point");
-    const { name } = req.body;
-    if (!name) { console.log("-> User name missing"); return res.status(400).json({ error: "User name not provided" }); }
-    console.log(`-> Attempting to add point for user: ${name}`);
-    db.serialize(() => {
-        db.run('BEGIN TRANSACTION');
-        const updateSql = `UPDATE users SET points = points + 1 WHERE name = ?`;
-        console.log("-> Executing SQL for point update");
-        db.run(updateSql, [name], function (err) {
-            if (err) { console.error("-> Database update points error:", err.message); db.run('ROLLBACK'); return res.status(500).json({ error: "Database error updating points" }); }
-            if (this.changes === 0) { console.log(`-> Add point failed: User '${name}' not found for update.`); db.run('ROLLBACK'); return res.status(404).json({ error: "User not found" }); }
-            console.log("-> Point update successful, fetching new total");
-            const selectSql = `SELECT points FROM users WHERE name = ?`;
-            db.get(selectSql, [name], (selectErr, row) => {
-                if (selectErr) { console.error("-> Database select error after point update:", selectErr.message); db.run('ROLLBACK'); return res.status(500).json({ error: "Database error retrieving updated points" }); }
-                if (!row) { console.error("-> Inconsistency: User found for update but not for select immediately after."); db.run('ROLLBACK'); return res.status(500).json({ error: "User data inconsistency" }); }
-                db.run('COMMIT', (commitErr) => {
-                    if (commitErr) { console.error("-> Database commit error:", commitErr.message); return res.status(500).json({ error: "Database commit error" }); }
-                    console.log(`-> Point added for user '${name}'. New total: ${row.points}`);
-                    res.status(200).json({ message: "Point added successfully", newPoints: row.points });
-                });
-            });
+app.post("/register", async (req, res) => {
+    // ... (snip) ...
+    try {
+        // ... (snip) ...
+        db.run(sql, [name, hashedPassword, 0], function (err) {
+            if (err) {
+                // ---> An error here (e.g., DB error) might cause a non-JSON response if not handled perfectly <---
+                console.error("-> Database insert error during registration:", err.message);
+                // This *should* send JSON, but if the server crashes before this, Azure might send HTML
+                return res.status(500).json({ error: "Database error during registration" });
+            }
+            // Success sends JSON
+            res.status(201).json({ message: "Registration successful" });
         });
-    });
+    } catch (error) {
+        // ---> An error here (e.g., bcrypt error) might cause a non-JSON response <---
+        console.error("-> Server registration error:", error);
+        // This *should* send JSON
+        res.status(500).json({ error: "Server error during registration process" });
+    }
 });
 
 
