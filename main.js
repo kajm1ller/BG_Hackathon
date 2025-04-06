@@ -45,6 +45,9 @@ async function handleLogin(event) {
     const messageElement = getElement('loginMessage');
     const authContainer = getElement('authContainer');
     const loggedInView = getElement('loggedInView');
+    const dormSelectDropdown = getElement('dorm-select'); // Get dorm dropdown for potential initial setting
+    const dormPointsDisplay = getElement('dorm-points-display'); // Get dorm points display
+
     if (!messageElement || !authContainer || !loggedInView) return;
     messageElement.textContent = 'Logging in...'; messageElement.style.color = 'black';
     try {
@@ -61,7 +64,14 @@ async function handleLogin(event) {
             const dormButton = getElement('toggleDormLeaderboard');
             if (userButton) userButton.classList.add('active');
             if (dormButton) dormButton.classList.remove('active');
-            await fetchLeaderboard(); // Fetch leaderboard on successful login
+            // Fetch leaderboard (will now handle dummy user data correctly)
+            await fetchLeaderboard();
+
+            // Trigger dorm points update based on current selection after login
+            if (dormSelectDropdown) {
+                handleDormChange({ target: dormSelectDropdown });
+            }
+
 
             form.reset(); messageElement.textContent = '';
         } else { messageElement.textContent = `Login failed: ${result.error || response.statusText || 'Invalid credentials'}`; messageElement.style.color = 'red'; loggedInView.classList.add('hidden'); }
@@ -80,43 +90,99 @@ function handleLogout() {
     getElement('registerMessage').textContent = '';
     if (getElement('registerSection').classList.contains('hidden') == false) { toggleAuthForms(); }
     console.log("User logged out");
+    // Optionally reset dorm points display on logout
+    const dormPointsDisplay = getElement('dorm-points-display');
+    if (dormPointsDisplay) dormPointsDisplay.textContent = '...'; // Or 0 or empty
 }
 
 // --- Leaderboard Fetching ---
 // Default leaderboard type
 let currentLeaderboardType = 'user';
+let currentDormLeaderboardData = []; // Store fetched dorm data
 
 async function fetchLeaderboard() {
     const listElement = getElement('leaderboard-list');
     if (!listElement) return;
-    listElement.innerHTML = '<li>Loading...</li>'; // Show loading state
+    listElement.innerHTML = ''; // Clear previous content
 
-    // Determine API endpoint based on currentLeaderboardType
-    // NOTE: You'll need to create these backend endpoints (e.g., /leaderboard/user, /leaderboard/dorm)
-    const endpoint = currentLeaderboardType === 'dorm' ? '/leaderboard/dorm' : '/leaderboard/user'; // Default to user
-    console.log(`Workspaceing leaderboard from: ${endpoint}`);
+    console.log(`Updating leaderboard view for type: ${currentLeaderboardType}`);
+    const dormSelectDropdown = getElement('dorm-select'); // Get dropdown to potentially trigger update
 
-    try {
-        // *** IMPORTANT: Update the fetch URL based on the endpoint ***
-        const response = await fetch(endpoint); // Use the dynamic endpoint
-        if (!response.ok) { const errorText = await response.text(); throw new Error(`HTTP error! status: ${response.status} - ${response.statusText} - ${errorText}`); }
-        const leaders = await response.json();
-        listElement.innerHTML = ''; // Clear loading/previous state
-        if (leaders && leaders.length > 0) {
-            leaders.forEach(leader => {
+    if (currentLeaderboardType === 'user') {
+        // --- Directly insert dummy user data for 'Per User' view ---
+        console.log("-> Populating with static dummy user data.");
+        const dummyUserData = [
+            { name: "Alice Smith", points: 1250 },
+            { name: "Bob Johnson", points: 1100 },
+            { name: "Charlie Brown", points: 980 },
+            { name: "Diana Prince", points: 850 },
+            { name: "Ethan Hunt", points: 720 }
+        ];
+
+        if (dummyUserData.length > 0) {
+            dummyUserData.forEach(leader => {
                 const li = document.createElement('li');
-                // Adjust display based on leaderboard type if necessary (e.g., show dorm name)
                 li.innerHTML = `<span>${leader.name}</span><span>${leader.points} Pts</span>`;
                 listElement.appendChild(li);
             });
         } else {
-            listElement.innerHTML = `<li>Leaderboard (${currentLeaderboardType}) is empty.</li>`;
+            listElement.innerHTML = `<li>Dummy user leaderboard is empty.</li>`; // Fallback
         }
-    } catch (error) {
-        console.error(`Error fetching ${currentLeaderboardType} leaderboard:`, error);
-        listElement.innerHTML = `<li>Error loading ${currentLeaderboardType} leaderboard. ${error.message ? `(${error.message})` : ''}</li>`;
+        // --- End dummy user data insertion ---
+
+        // --- ADDED: Trigger dorm points update even when showing user list ---
+        if (dormSelectDropdown) {
+            handleDormChange({ target: dormSelectDropdown });
+        }
+        // --- End Added ---
+
+    } else if (currentLeaderboardType === 'dorm') {
+        // --- Fetch dorm data dynamically ---
+        const endpoint = '/leaderboard/dorm';
+        listElement.innerHTML = '<li>Loading dorm data...</li>'; // Show loading state for dorms
+        console.log(`Workspaceing leaderboard from: ${endpoint}`);
+        try {
+            const response = await fetch(endpoint);
+            if (!response.ok) { const errorText = await response.text(); throw new Error(`HTTP error! status: ${response.status} - ${response.statusText} - ${errorText}`); }
+            const leaders = await response.json();
+            listElement.innerHTML = ''; // Clear loading message
+
+            // Store the fetched dorm data for later use
+            currentDormLeaderboardData = leaders;
+            // Trigger update of profile dorm points based on current selection
+            if (dormSelectDropdown) {
+                handleDormChange({ target: dormSelectDropdown });
+            }
+
+            if (leaders && leaders.length > 0) {
+                leaders.forEach(leader => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${leader.name}</span><span>${leader.points} Pts</span>`;
+                    listElement.appendChild(li);
+                });
+            } else {
+                listElement.innerHTML = `<li>Leaderboard (dorm) is empty.</li>`;
+            }
+        } catch (error) {
+            console.error(`Error fetching dorm leaderboard:`, error);
+            listElement.innerHTML = `<li>Error loading dorm leaderboard. ${error.message ? `(${error.message})` : ''}</li>`;
+            currentDormLeaderboardData = []; // Clear data on error
+            // Still try to update dorm points display (might show 0 or fallback)
+            if (dormSelectDropdown) {
+                handleDormChange({ target: dormSelectDropdown });
+            }
+        }
+        // --- End dorm data fetching ---
+    } else {
+        // Fallback for unknown type
+        listElement.innerHTML = `<li>Unknown leaderboard type: ${currentLeaderboardType}</li>`;
+        // Also trigger update here in case needed
+        if (dormSelectDropdown) {
+            handleDormChange({ target: dormSelectDropdown });
+        }
     }
 }
+
 
 // --- Leaderboard Toggle Handler ---
 function handleLeaderboardToggle(event) {
@@ -131,13 +197,13 @@ function handleLeaderboardToggle(event) {
         currentLeaderboardType = 'user';
         userButton.classList.add('active');
         dormButton.classList.remove('active');
-        fetchLeaderboard(); // Fetch new data
+        fetchLeaderboard(); // Fetch new data (will now show dummy users)
     } else if (clickedButton === dormButton && currentLeaderboardType !== 'dorm') {
         console.log("Switching to Dorm Leaderboard");
         currentLeaderboardType = 'dorm';
         dormButton.classList.add('active');
         userButton.classList.remove('active');
-        fetchLeaderboard(); // Fetch new data
+        fetchLeaderboard(); // Fetch new data (will fetch dorms)
     }
 }
 
@@ -175,6 +241,62 @@ function handleRedeemClick(event) {
 }
 
 
+// --- CORRECTED function to handle dorm selection changes ---
+function handleDormChange(event) {
+    const selectedDorm = event.target.value; // This comes from the HTML option value e.g., "Founders"
+    const dormPointsDisplay = getElement('dorm-points-display');
+
+    if (!dormPointsDisplay) return; // Exit if the display element isn't found
+
+    let points = 0; // Default to 0
+
+    // Try using the fetched data first (currentDormLeaderboardData)
+    // This lookup requires the 'name' property in the fetched data to match the HTML 'value'
+    if (currentDormLeaderboardData && currentDormLeaderboardData.length > 0) {
+        // IMPORTANT: This assumes the backend data ALSO gets fixed to use names matching the dropdown values
+        const dormData = currentDormLeaderboardData.find(dorm => dorm.name === selectedDorm);
+        if (dormData) {
+            points = dormData.points;
+            console.log(`Points found in fetched data for ${selectedDorm}: ${points}`);
+        } else {
+            // If not found in fetched data, THEN use static fallback
+            console.warn(`Dorm "${selectedDorm}" not found in fetched data, using static fallback.`);
+            // *** Use static fallback with keys matching HTML option values ***
+            const staticDormPointsData = {
+                "Kreischer": 1250,       // Key matches <option value="Kreischer">
+                "Founders": 1500,        // Key matches <option value="Founders">
+                "Offenhaur": 1100,       // Key matches <option value="Offenhaur">
+                "Falcon Heights": 950,  // Key matches <option value="Falcon Heights">
+                "Mcdonald": 800,        // Key matches <option value="Mcdonald">
+                "Conklin": 0            // Key matches <option value="Conklin">
+                // Ensure points values here are desired placeholders
+            };
+            points = staticDormPointsData[selectedDorm] !== undefined ? staticDormPointsData[selectedDorm] : 0; // Default to 0 if not in fallback either
+        }
+    } else {
+        // If fetched data is empty, use static fallback
+        console.warn("Dorm leaderboard data not yet fetched or empty, using static fallback for points display.");
+        // *** Use static fallback with keys matching HTML option values ***
+        const staticDormPointsData = {
+            "Kreischer": 1250,       // Key matches <option value="Kreischer">
+            "Founders": 1500,        // Key matches <option value="Founders">
+            "Offenhaur": 1100,       // Key matches <option value="Offenhaur">
+            "Falcon Heights": 950,  // Key matches <option value="Falcon Heights">
+            "Mcdonald": 800,        // Key matches <option value="Mcdonald">
+            "Conklin": 0            // Key matches <option value="Conklin">
+            // Ensure points values here are desired placeholders
+        };
+        points = staticDormPointsData[selectedDorm] !== undefined ? staticDormPointsData[selectedDorm] : 0; // Default to 0 if not in fallback either
+    }
+
+
+    console.log(`Final points determined for ${selectedDorm}: ${points}`); // Log final points
+
+    // Update the text content of the span
+    dormPointsDisplay.textContent = points;
+}
+
+
 // --- Event Listeners Setup ---
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
@@ -185,8 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleLink = getElement('toggleAuthLink');
     const recycleButton = getElement('recycle-button');
     const recycleLogo = getElement('recycle-logo');
-    const userLeaderboardToggle = getElement('toggleUserLeaderboard'); // Get toggle button
-    const dormLeaderboardToggle = getElement('toggleDormLeaderboard'); // Get toggle button
+    const userLeaderboardToggle = getElement('toggleUserLeaderboard');
+    const dormLeaderboardToggle = getElement('toggleDormLeaderboard');
+    const dormSelectDropdown = getElement('dorm-select'); // Get the dorm dropdown
+    const dormPointsDisplay = getElement('dorm-points-display'); // Get dorm points display element
+
 
     if (registerForm) registerForm.addEventListener('submit', handleRegister);
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
@@ -197,12 +322,17 @@ document.addEventListener('DOMContentLoaded', () => {
         recycleButton.addEventListener('mouseleave', () => { recycleLogo.classList.remove('spin-logo'); });
         console.log("Recycle button hover listeners attached.");
     }
-
-    // --- ADDED Listener for Leaderboard Toggles ---
     if (userLeaderboardToggle) userLeaderboardToggle.addEventListener('click', handleLeaderboardToggle);
     if (dormLeaderboardToggle) dormLeaderboardToggle.addEventListener('click', handleLeaderboardToggle);
 
-    // --- Existing Listeners for Redeem Buttons ---
+    // --- ADDED Listener for Dorm Dropdown Change ---
+    if (dormSelectDropdown) {
+        dormSelectDropdown.addEventListener('change', handleDormChange);
+        console.log("Attached listener to dorm dropdown.");
+    }
+    // --- End Added Listener ---
+
+    // Existing Listeners for Redeem Buttons
     const redeemButtons = document.querySelectorAll('.redeem-button');
     redeemButtons.forEach(button => { button.addEventListener('click', handleRedeemClick); });
     console.log(`Attached listeners to ${redeemButtons.length} redeem buttons.`);
@@ -212,9 +342,16 @@ document.addEventListener('DOMContentLoaded', () => {
     getElement('authContainer').classList.remove('hidden');
     getElement('registerSection').classList.add('hidden');
 
-    // Ensure the default toggle button is active visually
     if (userLeaderboardToggle) userLeaderboardToggle.classList.add('active');
     if (dormLeaderboardToggle) dormLeaderboardToggle.classList.remove('active');
+
+    // Set initial dorm points display based on default dropdown or stored value if applicable
+    if (dormSelectDropdown && dormPointsDisplay) {
+        // Trigger change event on load to set initial points based on default selection
+        // This uses the fallback static data until dorm leaderboard is loaded
+        handleDormChange({ target: dormSelectDropdown });
+    }
+
 
     console.log("Initial state set, listeners attached.");
 });
