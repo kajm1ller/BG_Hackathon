@@ -1,1 +1,0 @@
-export type { AustraliaPostCustomerFormatValues, AustraliaPostCustomerFormat, MsiPlesseyChecksumAlgorithmValues, MsiPlesseyChecksumAlgorithm, } from "../../core/bridge/compiled/BarcodeConfigurationTypes";
