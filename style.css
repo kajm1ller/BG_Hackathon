@@ -4,7 +4,7 @@ body {
     margin: 0;
     padding: 0;
     /* Updated background color */
-    background-color: #ffa14f;
+    background-color: #9edbff;
     /* This line MUST be orange */
     color: #333;
     /* Default text color */
@@ -247,6 +247,7 @@ body {
     flex-grow: 1;
     /* Allow iframe to take up vertical space */
     border: none;
+    /* Combined from inline style */
     border-radius: 10px 10px 0 0;
     /* Adjust radius if text is directly below */
 }
@@ -429,3 +430,63 @@ body {
     font-size: 0.9em;
     flex-shrink: 0;
 }
+
+/* --- Styles moved from index.html <style> block --- */
+
+/* Basic styling for layout - Moved from index.html */
+/* body styles already defined above */
+
+/* Helper to hide elements - already defined above */
+/* .hidden { display: none !important; } */
+
+/* Auth Container Styles - already defined above */
+/* #authContainer { ... } */
+/* #authContainer label { ... } */
+/* #authContainer input[type="text"], #authContainer input[type="password"] { ... } */
+/* #authContainer button { ... } */
+/* #authContainer button:hover { ... } */
+/* #authContainer a { ... } */
+/* Note: Selector changed to #authContainer a#toggleAuthLink above */
+/* #authContainer p { ... } */
+/* Note: Selectors changed to #authContainer p#loginMessage, #authContainer p#registerMessage above */
+/* #authContainer h2 { ... } */
+
+/* Logged-in View Container Layout - already defined above */
+/* #loggedInView { ... } */
+
+/* Area Styling & Assignment - already defined above */
+/* #profileArea, #mapArea, #centerArea, #leaderboardArea, #rewardsArea { ... } */
+
+/* Specific element styling - most already defined above */
+
+/* #profileArea img#user-avatar { ... } */
+/* #profileArea h3 { ... } */
+/* #profileArea p { ... } */
+/* #profileArea label[for="dorm-select"] { ... } */
+/* #profileArea #dorm-select { ... } */
+/* #logoutButton { ... } */
+/* #logoutButton:hover { ... } */
+
+/* #mapArea iframe { ... } */
+/* Added border:none; from inline style */
+
+/* #centerArea #recycle-logo { ... } */
+/* #centerArea .spin-logo { ... } */
+/* #centerArea #recycle-button { ... } */
+/* #centerArea #recycle-button:hover { ... } */
+/* #centerArea #recycle-button:active { ... } */
+
+/* #leaderboardArea h2, #rewardsArea h2 { ... } */
+
+/* #leaderboard-list { ... } */
+/* #leaderboard-list li { ... } */
+/* #leaderboard-list li::marker { ... } */
+
+/* Rewards Section Styling - already defined above */
+/* #rewards-list { ... } */
+/* .reward-item { ... } */
+/* .reward-item span { ... } */
+/* .redeem-button { ... } */
+/* .redeem-button:hover { ... } */
+/* .redeem-button:disabled { ... } */
+/* #redeemMessage { ... } */
