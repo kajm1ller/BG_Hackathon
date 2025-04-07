@@ -208,9 +208,8 @@ app.get("/leaderboard/user", (req, res) => {
 app.get("/leaderboard/dorm", (req, res) => {
     console.log("==== Received request for /leaderboard/dorm ====");
     // --- TODO: Implement dorm leaderboard logic ---
-    // This might involve:
-    // 1. A different table structure (e.g., linking users to dorms)
-    // 2. A different SQL query (e.g., grouping points by dorm)
+    // 1. different table structure 
+    // 2. different SQL query 
 
     console.warn("-> Dorm leaderboard endpoint is a placeholder.");
     // Sending back dummy data for now
@@ -223,27 +222,6 @@ app.get("/leaderboard/dorm", (req, res) => {
     ];
     res.status(200).json(dummyDormData);
 
-    /* --- Example of how you might query if you had a 'dorm' column in users table ---
-    if (!db) { console.error("-> DB not initialized for dorm leaderboard"); return res.status(500).json({ error: "Database connection not ready" }); }
-
-    const sql = `SELECT dorm, SUM(points) as total_points
-                 FROM users
-                 WHERE dorm IS NOT NULL AND dorm != ''
-                 GROUP BY dorm
-                 ORDER BY total_points DESC
-                 LIMIT 5`; // Example query
-    console.log("-> Executing SQL for dorm leaderboard");
-    db.all(sql, [], (err, rows) => {
-        if (err) {
-            console.error("-> Database error fetching dorm leaderboard:", err.message);
-            return res.status(500).json({ error: "Database error fetching dorm leaderboard" });
-        }
-        // Rename 'total_points' to 'points' and 'dorm' to 'name' for consistency with frontend if needed
-        const formattedRows = rows.map(row => ({ name: row.dorm, points: row.total_points }));
-        console.log(`-> Dorm leaderboard query successful, found ${formattedRows ? formattedRows.length : 0} dorms.`);
-        res.status(200).json(formattedRows);
-    });
-    */
 });
 
 

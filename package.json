@@ -11,6 +11,7 @@
     "bcrypt": "^5.1.1",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
+    "moon_laborers": "file:",
     "node-fetch": "^3.3.2",
     "scanbot-web-sdk": "^7.1.0",
     "sqlite3": "^5.1.7"
